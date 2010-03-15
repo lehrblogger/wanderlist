@@ -28,6 +28,8 @@ class Boot {
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
     Log.info("Run mode: " + Props.mode)
+    Log.info("Database driver: " + DBVendor.driverName)
+    Log.info("Database url: " + DBVendor.dbUrl)
 
     // Build SiteMap
     val entries = Menu(Loc("Home", List("index"), "Home")) :: User.sitemap
@@ -63,17 +65,11 @@ class Boot {
 * Database connection calculation
 */
 object DBVendor extends ConnectionManager {
+  val driverName = Props.get("db.driver") openOr "org.apache.derby.jdbc.EmbeddedDriver"
+  val dbUrl      = Props.get("db.url")    openOr "jdbc:derby:lift_example;create=true"
+
   def newConnection(name: ConnectionIdentifier): Box[Connection] = {
     try {
-      val driverName: String = Props.get("db.driver") openOr
-      "org.apache.derby.jdbc.EmbeddedDriver"
-
-      val dbUrl: String = Props.get("db.url") openOr
-      "jdbc:derby:lift_example;create=true"
-
-      Log.info("Database driver: " + driverName)
-      Log.info("Database url: " + dbUrl)
-
       Class.forName(driverName)
 
       val dm = (Props.get("db.user"), Props.get("db.password")) match {
