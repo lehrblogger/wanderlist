@@ -1,0 +1,112 @@
+<project name="stax-build" default="dist" basedir=".">
+    <description>
+        Application build file
+    </description>
+    <property environment="env" />
+    <property name="java.src.dir" location="src/java" />
+    <property name="scala.src.dir" location="src/scala" />
+    <property name="resources.dir" location="src/resources" />
+    <property name="webapp.dir" location="webapp" />
+    <property name="classes" location="${webapp.dir}/WEB-INF/classes" />
+    <property name="lib.dir" location="lib" />
+    
+    <property name="build" location="build" />
+    <property name="war.file" location="${build}/webapp.war" />
+    <property name="src.file" location="${build}/webapp-src.zip" />
+    
+    <!-- set default values for stax tasks -->
+    <property name="stax.appid" value="" />
+    <property name="run.port" value="8080" />
+    <property name="run.environment" value="" />
+    
+    <path id="webapp.classpath">
+        <path refid="scala.classpath"/>
+        <fileset dir="${webapp.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path> 
+
+    <path id="scala.classpath">
+        <pathelement location="${lib.dir}/scala-compiler.jar"/>
+        <pathelement location="${webapp.dir}/WEB-INF/lib/scala-library-2.7.7.jar"/>
+    </path>
+
+    <taskdef resource="scala/tools/ant/antlib.xml">
+         <classpath refid="scala.classpath"/>
+     </taskdef>
+
+
+
+    <target name="init">
+        <mkdir dir="${classes}" />
+    </target>
+    
+    <target name="clean" description="clean up">
+        <delete dir="${classes}" />
+        <delete dir="${build}" />
+        <delete dir="${webapp.dir}/WEB-INF/classes" />
+    </target>
+
+    <target name="compile" depends="init" description="compile the source ">
+        <javac srcdir="${java.src.dir}" destdir="${classes}" classpathref="webapp.classpath" />
+        <copy todir="${classes}">
+            <fileset dir="${java.src.dir}" excludes="**/*.java" />
+        </copy>
+        <copy todir="${classes}">
+            <fileset dir="${resources.dir}" />
+        </copy>
+
+        <scalac srcdir="${scala.src.dir}" destdir="${classes}" addparams="-g:vars"
+          classpathref="webapp.classpath"
+          force="changed"
+          deprecation="on">
+            <include name="**/*.scala"/>
+        </scalac>
+
+    </target>
+
+    <target name="dist" depends="compile" description="generate the distribution">
+        <mkdir dir="${build}" />
+        <war destfile="${war.file}" basedir="${webapp.dir}" webxml="${webapp.dir}/WEB-INF/web.xml" />
+        
+        <zip destfile="${src.file}">            
+            <zipfileset dir="${basedir}">
+                <exclude name="build/**" />
+                <exclude name="webapp/WEB-INF/classes/**" />
+            </zipfileset>
+        </zip>      
+    </target>
+    
+    <target name="deploy" depends="dist,stax-classpath" description="deploy the distribution to Stax">
+        <input message="Please enter Stax username:" addproperty="stax.username" />
+        <input message="Please enter Stax password:" addproperty="stax.password" />
+        <taskdef name="deploy" classname="com.staxnet.ant.DeployTask">
+            <classpath refid="staxtasks.class.path" />
+        </taskdef>
+
+        <!-- deploy the WAR file, but not the src archive file since it reduces the minimum upload size from 13MB to  8MB -->
+        <deploy deployfile="${war.file}" appid="${stax.appid}" username="${stax.username}" password="${stax.password}" />
+    </target>
+    
+    <target name="run" depends="compile,stax-classpath" description="run the application in stax">
+        <taskdef name="run" classname="com.staxnet.ant.RunWarTask">
+            <classpath refid="staxtasks.class.path" />
+        </taskdef>
+        <run workingdir="${build}/staxcat" webappdir="${webapp.dir}" port="${run.port}" environment="${run.environment}" />
+    </target>
+
+    <target name="stax-classpath">
+        <property environment="env" />
+        <fail message="STAX_HOME environment is not set" unless="env.STAX_HOME" />
+        <property name="stax.home" value="${env.STAX_HOME}"/>
+        <echo message="stax home: ${stax.home}" />
+
+        <path id="staxtasks.class.path">
+            <fileset dir="${stax.home}/lib" includes="*.jar"/>
+        </path>
+    </target>
+</project>
+

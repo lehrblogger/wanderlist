@@ -1,0 +1,14 @@
+.DS_Store
+*.pyc
+lift_book.pdf
+config.py
+boot/
+classes/
+lib_managed/
+src_managed/
+target/
+stax/build/
+stax/derby.log
+stax/lift_example
+stax/src/resources/props/*
+stax/src/main/resources/props/*
