@@ -20,12 +20,15 @@ class GoogleAuth {
     val account = :/("www.google.com").secure / "accounts"
     val m8 = :/("www.google.com").secure / "m8" / "feeds"
     val contacts = m8 / "contacts"
+    
     val h = new Http
+    var requestToken: Token = null
     
     def initiateRequest() = {
         val consumer = Consumer(Props.get("googleConsumer.key")    openOr "", 
                                 Props.get("googleConsumer.secret") openOr "")
         val Callback: String = SHtml.link("/oauth_callback", () => {
+                            println("in the callback!")
                             val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier") openOr "", "UTF-8")
                             val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
                             
@@ -38,9 +41,9 @@ class GoogleAuth {
                         }, Text("")).attribute("href").get.text
 
         val extras = Map("scope" -> m8.to_uri.toString, "oauth_callback" -> Callback)
-        val requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
+        requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
         val url = (account / AuthorizeToken <<? requestToken to_uri).toString
-        S.redirectTo(url)
+        S.redirectTo(url)   
     }
 
     // // Convenient helper class
