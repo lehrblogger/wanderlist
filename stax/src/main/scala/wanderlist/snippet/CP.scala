@@ -19,8 +19,8 @@
 // import scala.xml.{NodeSeq, Text} 
 //  
 // class ContactList { 
-//  def goToGoogle(form: NodeSeq) = { 
-//    val todo = ToDo.create.owner(User.currentUser) 
+//  def add(form: NodeSeq) = { 
+//    val cp = ContactProvider.create.owner(User.currentUser) 
 //  
 //    def checkAndSave(): Unit = 
 //    todo.validate match { 

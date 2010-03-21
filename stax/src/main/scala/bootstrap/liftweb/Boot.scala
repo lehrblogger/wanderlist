@@ -9,6 +9,7 @@ import Helpers._
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import _root_.java.sql.{Connection, DriverManager}
 import _root_.wanderlist.model._
+import _root_.wanderlist.lib._
 import _root_.net.liftweb.http.provider.HTTPRequest
 import _root_.dispatch._
 
@@ -32,9 +33,19 @@ class Boot {
     Log.info("Database url: " + DBVendor.dbUrl)
 
     // Build SiteMap
-    val entries = Menu(Loc("Home", List("index"), "Home")) :: User.sitemap
+    val entries = Menu(Loc("Home", List("index"), "Home")) ::
+                  Menu(Loc("Testing Google Callback", List ("callback"), "Google Callback")) ::
+                  User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
+
+    LiftRules.dispatch.append { 
+        case Req("oauth_start" :: Nil, _, _) => {
+            val g = new GoogleAuth
+            g.initiateRequest
+        }
+    }
+    
     /*
      * Show the spinny image when an Ajax call starts
      */

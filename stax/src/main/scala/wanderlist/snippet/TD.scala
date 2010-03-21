@@ -25,8 +25,8 @@ class TD {
 
     def checkAndSave(): Unit = 
       todo.validate match { 
-        case Nil => todo.save ; S.notice("Added "+todo.desc) 
-        case xs => S.error(xs) ; S.mapSnippet("TD.add", doBind) 
+        case Nil => todo.save   ; S.notice("Added "+todo.desc) 
+        case xs  => S.error(xs) ; S.mapSnippet("TD.add", doBind) 
       } 
 
     def doBind(form: NodeSeq) = 
