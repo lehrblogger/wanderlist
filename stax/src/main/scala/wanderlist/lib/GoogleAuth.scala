@@ -27,7 +27,7 @@ class GoogleAuth {
     def initiateRequest() = {
         val consumer = Consumer(Props.get("googleConsumer.key")    openOr "", 
                                 Props.get("googleConsumer.secret") openOr "")
-        val Callback: String = SHtml.link("/oauth_callback", () => {
+        val Callback: String = SHtml.link("http://localhost:8080/oauth_callback", () => {
                             println("in the callback!")
                             val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier") openOr "", "UTF-8")
                             val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
@@ -36,10 +36,10 @@ class GoogleAuth {
                             def extractId(feed: scala.xml.Elem): String = (feed \ "id").text
 
                             // Query for just the user's id (in Google's case, their email address)
-                            h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> extractId)
-                             
+                            println(h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> extractId))
+                            S.redirectTo("http://localhost:8080/")   
                         }, Text("")).attribute("href").get.text
-
+        println(Callback    )
         val extras = Map("scope" -> m8.to_uri.toString, "oauth_callback" -> Callback)
         requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
         val url = (account / AuthorizeToken <<? requestToken to_uri).toString
