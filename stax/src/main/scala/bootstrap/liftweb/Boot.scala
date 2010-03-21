@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist")
-    Schemifier.schemify(true, Log.infoF _, User, ToDo)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, ContactProvider)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -37,24 +37,18 @@ class Boot {
                   Menu(Loc("Testing Google Callback", List ("callback"), "Google Callback")) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
-
-
+    
     LiftRules.dispatch.append { 
-        case Req("oauth_start" :: Nil, _, _) => {
+        case Req("cp" :: "oauth_start" :: Nil, _, _) => {
             val g = new GoogleAuth
             g.initiateRequest
         }
     }
     
-    /*
-     * Show the spinny image when an Ajax call starts
-     */
+    // Show the spinny image when an Ajax call start
     LiftRules.ajaxStart =
       Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
-
-    /*
-     * Make the spinny image go away when it ends
-     */
+    // Make the spinny image go away when it ends
     LiftRules.ajaxEnd =
       Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 

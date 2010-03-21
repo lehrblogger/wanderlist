@@ -5,6 +5,8 @@ import mapper._
 import http._ 
 import SHtml._ 
 import util._ 
+
+import wanderlist.model._
  
 class ContactProvider extends LongKeyedMapper[ContactProvider] with IdPK { 
   def getSingleton = ContactProvider 

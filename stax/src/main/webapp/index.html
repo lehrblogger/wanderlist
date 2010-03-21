@@ -3,40 +3,40 @@
 		<lift:menu.item name="Login">Log In</lift:menu.item> 
 	</lift:Util.out> 
 	<lift:Util.in> 
-		<lift:TD.add form="post"> 
-			<table> 
-	  		<tr> 
-				<td>Description:</td> 
-				<td><todo:desc>To Do</todo:desc></td> 
-	   		</tr>
-	   		<tr> 
-	    		<td>Priority</td> 
-	    		<td><todo:priority><select><option>1</option></select></todo:priority></td> 
-	   		</tr> 
-	   		<tr> 
-	    		<td>&nbsp;</td> 
-	    		<td><todo:submit><button>New</button> </todo:submit></td> 
-	   		</tr> 
-	 		</table> 
-		</lift:TD.add> 
+		<lift:Util.needsCp> 
+			<a href="/cl/oauth_start">Authenticate with Google!</a>
+		</lift:Util.needsCp>
+		<lift:Util.hasCp> 
+			<lift:CL.name>Hi, <cl:name/></lift:CL.name>
+			
+			<lift:CL.list > 
+				<div> 
+			   		<ul> 
+			      		<li> 
+			       			<cl:name/> (<cl:emails/>) 
+			      		</li> 
+			   		</ul> 
+			 	</div> 
+			</lift:CL.list>
+		</lift:Util.hasCp> 
 
 		<lift:TD.add form="post"> 
 			<table> 
-    		<tr> 
+	   		<tr> 
 				<td>Description:</td> 
 				<td><todo:desc>To Do</todo:desc></td> 
-     		</tr>
-     		<tr> 
-      		<td>Priority</td> 
-      		<td><todo:priority><select><option>1</option></select></todo:priority></td> 
-     		</tr> 
-     		<tr> 
-      		<td>&nbsp;</td> 
-      		<td><todo:submit><button>New</button> </todo:submit></td> 
-     		</tr> 
-   		</table> 
-  	</lift:TD.add> 
- 	
+	    		</tr>
+	    		<tr> 
+	     		<td>Priority</td> 
+	     		<td><todo:priority><select><option>1</option></select></todo:priority></td> 
+	    		</tr> 
+	    		<tr> 
+	     		<td>&nbsp;</td> 
+	     		<td><todo:submit><button>New</button> </todo:submit></td> 
+	    		</tr> 
+	  		</table> 
+	 	</lift:TD.add> 
+
 		<lift:TD.list all_id="all_todos"> 
 		 <div id="all_todos"> 
 		   <div>Exclude done <todo:exclude/></div> 
