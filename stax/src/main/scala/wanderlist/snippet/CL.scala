@@ -36,7 +36,7 @@ class CL {
         val tenContacts = g.getTenContacts(token)
         
         tenContacts.flatMap(contact => bind("cl", xhtml, "name"   -> contact.name,
-                                                         "emails" -> contact.emails.head))
+                                                         "emails" -> contact.emails.toString))
     }   
 
   //  

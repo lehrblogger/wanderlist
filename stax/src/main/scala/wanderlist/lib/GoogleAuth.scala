@@ -36,7 +36,10 @@ class GoogleAuth {
                             val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
                             val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)    
                             ContactProvider.create.authenticated(true).owner(User.currentUser.open_!).accessTokenKey(accessToken.value).accessTokenSecret(accessToken.secret).save                            
-                            S.redirectTo(Props.get("host").open_!)   
+                            
+                            
+                            
+                            S.redirectTo(Props.get("host").open_!)
                         }, Text("")).attribute("href").get.text
         val extras = Map("scope" -> m8.to_uri.toString, "oauth_callback" -> Callback)
         requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
@@ -66,7 +69,14 @@ class GoogleAuth {
         Contact(name, emails)
       }).toList
 
+
+      object name extends MappedPoliteString(this, 256)
+      object googleId extends MappedPoliteString(this, 256)
+      object owner extends MappedLongForeignKey(this, User)
+      object lastUpdated extends MappedLongForeignKey(this, User)
+      object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, Contactgroup.group)
+      
     def getUserId(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractId)
 
-    def getTenContacts(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 10) <@ (consumer, token) <> parse)
+    def getTenKContacts(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, token) <> parse)
 }

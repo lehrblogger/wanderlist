@@ -11,10 +11,12 @@ val GetAccessToken = "OAuthGetAccessToken"
 val account = :/("www.google.com").secure / "accounts"
 val m8 = :/("www.google.com").secure / "m8" / "feeds"
 val contacts = m8 / "contacts"
+val groups = m8 / "groups"
 
 // Stuff you might want to customize
-val consumer = Consumer(key, pass)
+val consumer = Consumer("YOUR_KEY", "YOUR_SECRET")
 val Callback = "http://localhost:8080/callback"
+
 
 // The three legs of the OAuth exchange
 val h = new Http
@@ -35,7 +37,7 @@ def extractId(feed: scala.xml.Elem): String =
 h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> extractId)
 
 // Convenient helper class
-case class Contact(name: String, emails: List[String])
+// Convenient helper class
 
 // Convenient helper method (grab name, list of emails for each contact in an xml response of contacts)
 def parse(feed: scala.xml.Elem): List[Contact] =
@@ -47,6 +49,65 @@ def parse(feed: scala.xml.Elem): List[Contact] =
     } yield address.text).toList
     Contact(name, emails)
   }).toList
+  
+def parse2(feed: scala.xml.Elem) = feed.toList
 
-// Grab names and emails for the first 10 contacts
-h(contacts / "default" / "full" <<? Map("max-results" -> 10) <@ (consumer, accessToken) <> parse).foreach(println)
+
+case class Group(name: String, googleID: String, lastUpdated: String)
+{
+  if link.attribute("rel") == "edit" {
+      val googleId <- (entry \\ "link").attribute("href")
+      break
+  }
+}
+
+ 
+object name extends MappedPoliteString(this, 256)
+object googleId extends MappedPoliteString(this, 256)
+object owner extends MappedLongForeignKey(this, User)
+object lastUpdated extends MappedDateTime(this)
+object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, Contactgroup.group)
+
+
+
+case class Contact(name: String,  googleID: String, lastUpdated: String, emails: List[String])
+def parseAndStoreContacts(feed: scala.xml.Elem): List[Contact] =
+  (for (entry <- feed \\ "entry") yield {
+    val name = (entry \ "title").text
+    val lastUpdated = (entry \ "updated").text
+    var googleId = "ERROR"
+    for (link <- entry \\ "link") { 
+        if ((link \ "@rel") == "edit") googleId = (link \ "@href").toString
+    }
+    val emails = (for {
+      email <- entry \\ "email"
+      address <- email.attribute("address")
+    } yield address.text).toList
+    Contact(name, googleId, lastUpdated, emails)
+  }).toList
+h(contacts / "default" / "full" <<? Map("max-results" -> 1) <@ (consumer, accessToken) <> parseAndStoreContacts).foreach(println)
+  
+case class Group(name: String, googleID: String, lastUpdated: String)
+def parseAndStoreGroups(feed: scala.xml.Elem): List[Group] =
+  (for (entry <- feed \\ "entry") yield {
+    val name = (entry \ "title").text
+    val lastUpdated = (entry \ "updated").text
+    var googleId = "ERROR"
+    for (link <- entry \\ "link") { 
+        if ((link \ "@rel") == "edit") googleId = (link \ "@href").toString
+    }
+    Group(name, googleId, lastUpdated)
+  }).toList
+h(groups / "default" / "full" <<? Map("max-results" -> 1) <@ (consumer, accessToken) <> parseAndStoreGroups).foreach(println)
+
+
+
+
+
+
+
+
+
+
+
+
