@@ -26,18 +26,23 @@ class CL {
         bind("cl", xhtml, "name" -> g.getUserId(token) )
     }   
     
+    def listContexts(xhtml: NodeSeq) = { 
+        val contexts = Context.findAll(By(Context.owner, User.currentUser.open_!))
+        contexts.flatMap(context => bind("cl", xhtml, "name" -> context.name))
+    }
     
-
-    
-    def list(xhtml: NodeSeq) = { 
-        // val g = new GoogleAuth
-        // val token = g.getTokenForUser(User.currentUser.open_!)
-        // 
-        // val tenContacts = g.getTenContacts(token)
-        // 
-        // tenContacts.flatMap(contact => bind("cl", xhtml, "name"   -> contact.name,
-        //                                                  "emails" -> contact.emails.toString))
-    }   
+    def listContacts(xhtml: NodeSeq) = { 
+        Contact.findAll(By(Contact.owner, User.currentUser.open_!), MaxRows(30)).flatMap(
+            contact => bind("cl", xhtml, 
+                "name"   -> contact.name,
+                "emails" -> ContactEmail.findAll(By(ContactEmail.contact, contact)).flatMap(
+                    contactemail => bind("e", chooseTemplate("email", "list", xhtml), 
+                        "address" -> contactemail.email.toString
+                    )
+                )
+            )
+        )
+    }
 
   //  
   // private def doList(reDraw: () => JsCmd)(html: NodeSeq): NodeSeq = 

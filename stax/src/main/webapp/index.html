@@ -7,17 +7,27 @@
 			<a href="/cp/oauth_start">Authenticate with Google!</a>
 		</lift:Util.needsCp>
 		<lift:Util.hasCp> 
-			<lift:CL.name>Hi, <cl:name/></lift:CL.name>
-			
-			<lift:CL.list > 
-				<div> 
-			   		<ul> 
-			      		<li> 
-			       			<cl:name/> (<cl:emails/>) 
-			      		</li> 
-			   		</ul> 
-			 	</div> 
-			</lift:CL.list>
+			<h3><lift:CL.name>Hi, <cl:name/></lift:CL.name></h3><br/>
+			<div>
+				<h4>These are your groups:</h4>
+	   			<ol>
+					<lift:CL.listContexts> 
+		      			<li><cl:name/></li> 
+					</lift:CL.listContexts>
+				</ol> 
+		 	</div>
+			<div>
+				<h4>These are some of your contacts:</h4>
+	   			<ol>
+					<lift:CL.listContacts> 
+		      			<li><cl:name/>
+							<cl:emails><email:list><ul>
+								<li><e:address/></li> 
+							</ul></email:list></cl:emails>
+						</li> 
+					</lift:CL.listContacts>
+				</ol> 
+		 	</div>
 		</lift:Util.hasCp> 
 
 		<lift:TD.add form="post"> 

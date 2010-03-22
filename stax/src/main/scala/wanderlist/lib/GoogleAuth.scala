@@ -65,13 +65,8 @@ class GoogleAuth {
             for (entry <- (feed \\ "entry")) {
                 val name = (entry \ "title").text
                 val lastUpdated = parseDate((entry \ "updated").text)
-                var googleId = "ERROR"
-                (entry \\ "link").find(link => (link \ "@rel") == "edit") match {
-                    case Some(link) => 
-                        Context.create.name(name).owner(User.currentUser.open_!).googleId((link \ "@href").toString).lastUpdated(lastUpdated).save  
-                    case None => 
-                        error("googleId link found")
-                }
+                var googleId = (entry \ "id").text
+                Context.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
             }
         val accessToken = getTokenForUser(User.currentUser.open_!)
         h(contexts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContexts)
@@ -82,20 +77,16 @@ class GoogleAuth {
             for (entry <- (feed \\ "entry")) {
                 val name = (entry \ "title").text
                 val lastUpdated = parseDate((entry \ "updated").text)
-                (entry \\ "link").find(link => (link \ "@rel") == "edit") match {
-                    case Some(link) => {
-                        val newContact = Contact.create.name(name).owner(User.currentUser.open_!).googleId((link \ "@href").toString).lastUpdated(lastUpdated)
-                        newContact.save  
-                        for (email <- (entry \\ "email")) {
-                          ContactEmail.create.email((email \ "@address").toString).contact(newContact).save
-                        }
-                        for (group <- (entry \\ "groupMembershipInfo")) {
-                          println((group \ "@href").toString)
-                          // val context = Context.findAll(By(Context.googleId, (group \ "@href").toString)).head
-                          // ContactContext.join(newContact, context)
-                        }
-                    }
-                    case None => error("googleId link found")
+                var googleId = (entry \ "id").text
+                val newContact = Contact.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated)
+                newContact.save  
+                for (email <- (entry \\ "email")) {
+                  ContactEmail.create.email((email \ "@address").toString).contact(newContact).save
+                }
+                for (group <- (entry \\ "groupMembershipInfo")) {
+                  //println((group \ "@href").toString)
+                  val context = Context.findAll(By(Context.googleId, (group \ "@href").toString)).head
+                  ContactContext.join(newContact, context)
                 }
             }
         }
