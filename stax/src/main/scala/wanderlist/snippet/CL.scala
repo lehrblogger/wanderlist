@@ -30,13 +30,13 @@ class CL {
 
     
     def list(xhtml: NodeSeq) = { 
-        val g = new GoogleAuth
-        val token = g.getTokenForUser(User.currentUser.open_!)
-        
-        val tenContacts = g.getTenContacts(token)
-        
-        tenContacts.flatMap(contact => bind("cl", xhtml, "name"   -> contact.name,
-                                                         "emails" -> contact.emails.toString))
+        // val g = new GoogleAuth
+        // val token = g.getTokenForUser(User.currentUser.open_!)
+        // 
+        // val tenContacts = g.getTenContacts(token)
+        // 
+        // tenContacts.flatMap(contact => bind("cl", xhtml, "name"   -> contact.name,
+        //                                                  "emails" -> contact.emails.toString))
     }   
 
   //  

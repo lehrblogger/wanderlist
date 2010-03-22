@@ -6,12 +6,12 @@ import SHtml._
 import util._ 
 import wanderlist.model._
  
-class Group extends LongKeyedMapper[Group] with IdPK { 
-  def getSingleton = Group 
+class Context extends LongKeyedMapper[Context] with IdPK { 
+  def getSingleton = Context 
   object name extends MappedPoliteString(this, 256)
   object googleId extends MappedPoliteString(this, 256)
   object owner extends MappedLongForeignKey(this, User)
   object lastUpdated extends MappedDateTime(this)
-  object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, Contactgroup.group) 
+  object contexts extends HasManyThrough(this, Context, ContactContext, ContactContext.contact, ContactContext.context) 
 }
-object Group extends Group with LongKeyedMetaMapper[Group] {}
+object Context extends Context with LongKeyedMetaMapper[Context] {}

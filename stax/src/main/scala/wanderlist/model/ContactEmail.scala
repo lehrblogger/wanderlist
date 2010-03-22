@@ -10,7 +10,7 @@ import wanderlist.model._
 class ContactEmail extends LongKeyedMapper[ContactEmail] with IdPK { 
   def getSingleton = ContactEmail 
 
-  object email extends MappedEmail(this) 
+  object email extends MappedEmail(this, 128) 
   object contact extends MappedLongForeignKey(this, Contact)
 }
 object ContactEmail extends ContactEmail with LongKeyedMetaMapper[ContactEmail] {}

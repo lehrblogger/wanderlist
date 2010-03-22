@@ -70,7 +70,7 @@ object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.con
 
 
 
-case class Contact(name: String,  googleID: String, lastUpdated: String, emails: List[String])
+case class Contact(name: String,  googleID: String, lastUpdated: String, emails: List[String], groups: List[String])
 def parseAndStoreContacts(feed: scala.xml.Elem): List[Contact] =
   (for (entry <- feed \\ "entry") yield {
     val name = (entry \ "title").text
@@ -83,20 +83,23 @@ def parseAndStoreContacts(feed: scala.xml.Elem): List[Contact] =
       email <- entry \\ "email"
       address <- email.attribute("address")
     } yield address.text).toList
-    Contact(name, googleId, lastUpdated, emails)
+    val groups = (for {
+      group <- entry \\ "groupMembershipInfo"
+      link <- group \ "@href"
+    } yield link.text).toList
+    Contact(name, googleId, lastUpdated, emails, groups)
   }).toList
-h(contacts / "default" / "full" <<? Map("max-results" -> 1) <@ (consumer, accessToken) <> parseAndStoreContacts).foreach(println)
+h(contacts / "default" / "full" <<? Map("max-results" -> 2) <@ (consumer, accessToken) <> parseAndStoreContacts).foreach(println)
   
 case class Group(name: String, googleID: String, lastUpdated: String)
 def parseAndStoreGroups(feed: scala.xml.Elem): List[Group] =
   (for (entry <- feed \\ "entry") yield {
     val name = (entry \ "title").text
     val lastUpdated = (entry \ "updated").text
-    var googleId = "ERROR"
-    for (link <- entry \\ "link") { 
-        if ((link \ "@rel") == "edit") googleId = (link \ "@href").toString
+    (entry \\ "link").find(link => (link \ "@rel") == "edit") match {
+        case Some(link) => Group(name, (link \ "@href").toString, lastUpdated)
+        case None => error("googleId link found")
     }
-    Group(name, googleId, lastUpdated)
   }).toList
 h(groups / "default" / "full" <<? Map("max-results" -> 1) <@ (consumer, accessToken) <> parseAndStoreGroups).foreach(println)
 

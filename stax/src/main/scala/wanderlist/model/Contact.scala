@@ -12,16 +12,16 @@ class Contact extends LongKeyedMapper[Contact] with IdPK {
     object googleId extends MappedPoliteString(this, 256)
     object owner extends MappedLongForeignKey(this, User)
     object lastUpdated extends MappedDateTime(this)
-    object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, Contactgroup.group)
+    object contexts extends HasManyThrough(this, Context, ContactContext, ContactContext.contact, ContactContext.context)
 }
 object Contact extends Contact with LongKeyedMetaMapper[Contact] {}
 
-class ContactGroup extends LongKeyedMapper[ContactGroup] with IdPK {
-    def getSingleton = ContactGroup
+class ContactContext extends LongKeyedMapper[ContactContext] with IdPK {
+    def getSingleton = ContactContext
     object contact extends MappedLongForeignKey(this, Contact)
-    object group extends MappedLongForeignKey(this, Group)
+    object context extends MappedLongForeignKey(this, Context)
 }
-object ContactGroup extends ContactGroup with LongKeyedMetaMapper[ContactGroup] {
-    def join (c: Contact, g: Group) = 
-        this.create.contact(c).group(g).save
+object ContactContext extends ContactContext with LongKeyedMetaMapper[ContactContext] {
+    def join (c: Contact, g: Context) = 
+        this.create.contact(c).context(g).save
 }
