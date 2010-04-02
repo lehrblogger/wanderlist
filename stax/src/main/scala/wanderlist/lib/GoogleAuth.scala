@@ -4,7 +4,7 @@ import _root_.net.liftweb.http._
 import S._ 
 import _root_.net.liftweb.util._ 
 import Helpers._
-import _root_.scala.xml._
+import _root_.scala.xml.{Group => XMLGroup, _}
 import dispatch._
 import oauth._
 import OAuth._
@@ -39,7 +39,7 @@ class GoogleAuth {
                             val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)    
                             ContactProvider.create.authenticated(true).owner(User.currentUser.open_!).accessTokenKey(accessToken.value).accessTokenSecret(accessToken.secret).save                            
                             
-                            getGoogleContexts()
+                            getGoogleGroups()
                             getGoogleContacts()
                             
                             S.redirectTo(Props.get("host").open_!)
@@ -60,16 +60,16 @@ class GoogleAuth {
         parser.parse(dateString)
     }
     
-    def getGoogleContexts() = {
-        def parseAndStoreContexts(feed: scala.xml.Elem) =
+    def getGoogleGroups() = {
+        def parseAndStoreGroups(feed: scala.xml.Elem) =
             for (entry <- (feed \\ "entry")) {
                 val name = (entry \ "title").text
                 val lastUpdated = parseDate((entry \ "updated").text)
                 var googleId = (entry \ "id").text
-                Context.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
+                Group.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
             }
         val accessToken = getTokenForUser(User.currentUser.open_!)
-        h(contexts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContexts)
+        h(contexts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
     
     def getGoogleContacts() = {
@@ -85,8 +85,8 @@ class GoogleAuth {
                 }
                 for (group <- (entry \\ "groupMembershipInfo")) {
                   //println((group \ "@href").toString)
-                  val context = Context.findAll(By(Context.googleId, (group \ "@href").toString)).head
-                  ContactContext.join(newContact, context)
+                  val context = Group.findAll(By(Group.googleId, (group \ "@href").toString)).head
+                  ContactGroup.join(newContact, context)
                 }
             }
         }

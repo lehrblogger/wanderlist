@@ -26,8 +26,8 @@ class CL {
         bind("cl", xhtml, "name" -> g.getUserId(token) )
     }   
     
-    def listContexts(xhtml: NodeSeq) = { 
-        val contexts = Context.findAll(By(Context.owner, User.currentUser.open_!))
+    def listGroups(xhtml: NodeSeq) = { 
+        val contexts = Group.findAll(By(Group.owner, User.currentUser.open_!))
         contexts.flatMap(context => bind("cl", xhtml, "name" -> context.name))
     }
     
