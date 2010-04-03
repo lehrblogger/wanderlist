@@ -1,14 +1,16 @@
 An in-progress tool to enable users to centrally manage their personal and professional relationships across a variety of social web applications.
 
-yyyy-mm-dd: milestones
---------------------------------------------------
-2010-03-01: basic environment set up
-2010-03-08: auth with google, printing contact lists. test accounts set up on google and other services?
-2010-03-15: writing to google with rudimentary groups interface
-2010-03-22: interface for organizing groups complete, auth with selected services working
-2010-03-29: api integration with selected services for adding and removing contacts based on names/email addresses
-2010-04-05: synchronization from wanderlist out to other services, interface for resolving conflicts
-2010-04-12: code complete for presentation demo and alpha users basic site design
-2010-04-19: initial slide deck complete, site design updates complete (but no added functionality)
-2010-04-26: presentation complete with time to practice
-2010-05-03: present!
+
+I'm leaving the following production schedule purely for amusement:
+	yyyy-mm-dd: milestones
+	--------------------------------------------------
+	2010-03-01: basic environment set up
+	2010-03-08: auth with google, printing contact lists. test accounts set up on google and other services?
+	2010-03-15: writing to google with rudimentary groups interface
+	2010-03-22: interface for organizing groups complete, auth with selected services working
+	2010-03-29: api integration with selected services for adding and removing contacts based on names/email addresses
+	2010-04-05: synchronization from wanderlist out to other services, interface for resolving conflicts
+	2010-04-12: code complete for presentation demo and alpha users basic site design
+	2010-04-19: initial slide deck complete, site design updates complete (but no added functionality)
+	2010-04-26: presentation complete with time to practice
+	2010-05-03: present!
