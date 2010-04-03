@@ -1,29 +1,23 @@
 package wanderlist.snippet 
- 
 import wanderlist._ 
 import wanderlist.lib._
 import model._ 
- 
 import net.liftweb._ 
 import http._ 
 import SHtml._ 
 import S._ 
- 
 import js._ 
 import JsCmds._ 
- 
 import mapper._ 
- 
 import util._ 
 import Helpers._ 
- 
 import scala.xml.{NodeSeq, Text} 
  
 class CL { 
     def name(xhtml: NodeSeq) = { 
-        val g = new GoogleAuth
-        val token = g.getTokenForUser(User.currentUser.open_!)
-        bind("cl", xhtml, "name" -> g.getUserId(token) )
+        val gp = new GoogleProvider
+        val token = gp.getTokenForUser(User.currentUser.open_!)
+        bind("cl", xhtml, "name" -> gp.getUserId(token) )
     }   
     
     def listGroups(xhtml: NodeSeq) = { 

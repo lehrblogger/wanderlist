@@ -16,8 +16,8 @@ class Util {
         if (!User.loggedIn_?) html else NodeSeq.Empty 
     
     def hasCp(html: NodeSeq) = 
-        if (Provider.findAll(By(Provider.owner, User.currentUser.open_!)) != Nil) html else NodeSeq.Empty 
+        if (GoogleProvider.findAll(By(GoogleProvider.owner, User.currentUser.open_!)) != Nil) html else NodeSeq.Empty 
     
     def needsCp(html: NodeSeq) = 
-        if (Provider.findAll(By(Provider.owner, User.currentUser.open_!)) == Nil) html else NodeSeq.Empty
+        if (GoogleProvider.findAll(By(GoogleProvider.owner, User.currentUser.open_!)) == Nil) html else NodeSeq.Empty
 }

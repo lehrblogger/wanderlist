@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, Provider, Contact, ContactEmail, Group, ContactGroup)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -40,8 +40,8 @@ class Boot {
     
     LiftRules.dispatch.append { 
         case Req("cp" :: "oauth_start" :: Nil, _, _) => {
-            val g = new GoogleAuth
-            g.initiateRequest
+            val gp = new GoogleProvider
+            gp.initiateRequest
         }
     }
     
