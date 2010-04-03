@@ -26,7 +26,7 @@ class GoogleAuth {
     val account = :/("www.google.com").secure / "accounts"
     val m8 = :/("www.google.com").secure / "m8" / "feeds"
     val contacts = m8 / "contacts"
-    val contexts = m8 / "groups"
+    val groups = m8 / "groups"
     
     val h = new Http
     val consumer = Consumer(Props.get("googleConsumer.key").open_!, 
@@ -69,7 +69,7 @@ class GoogleAuth {
                 Group.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
             }
         val accessToken = getTokenForUser(User.currentUser.open_!)
-        h(contexts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
+        h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
     
     def getGoogleContacts() = {
@@ -85,8 +85,8 @@ class GoogleAuth {
                 }
                 for (group <- (entry \\ "groupMembershipInfo")) {
                   //println((group \ "@href").toString)
-                  val context = Group.findAll(By(Group.googleId, (group \ "@href").toString)).head
-                  ContactGroup.join(newContact, context)
+                  val group = Group.findAll(By(Group.googleId, (group \ "@href").toString)).head
+                  ContactGroup.join(newContact, group)
                 }
             }
         }

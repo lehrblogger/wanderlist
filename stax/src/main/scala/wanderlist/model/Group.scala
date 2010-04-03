@@ -12,6 +12,6 @@ class Group extends LongKeyedMapper[Group] with IdPK {
   object googleId extends MappedPoliteString(this, 256)
   object owner extends MappedLongForeignKey(this, User)
   object lastUpdated extends MappedDateTime(this)
-  object contexts extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, ContactGroup.context) 
+  object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, ContactGroup.group) 
 }
 object Group extends Group with LongKeyedMetaMapper[Group] {}

@@ -27,8 +27,8 @@ class CL {
     }   
     
     def listGroups(xhtml: NodeSeq) = { 
-        val contexts = Group.findAll(By(Group.owner, User.currentUser.open_!))
-        contexts.flatMap(context => bind("cl", xhtml, "name" -> context.name))
+        val groups = Group.findAll(By(Group.owner, User.currentUser.open_!))
+        groups.flatMap(group => bind("cl", xhtml, "name" -> group.name))
     }
     
     def listContacts(xhtml: NodeSeq) = { 
