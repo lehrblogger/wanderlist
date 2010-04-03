@@ -23,5 +23,6 @@ class ContactGroup extends LongKeyedMapper[ContactGroup] with IdPK {
 }
 object ContactGroup extends ContactGroup with LongKeyedMetaMapper[ContactGroup] {
     def join (c: Contact, g: Group) = 
+        //TODO validate that Contact and Group have same owner
         this.create.contact(c).context(g).save
 }

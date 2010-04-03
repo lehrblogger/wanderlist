@@ -37,7 +37,7 @@ class GoogleAuth {
         val Callback: String = SHtml.link(Props.get("host").open_! + "oauth_callback", () => {
                             val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
                             val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)    
-                            ContactProvider.create.authenticated(true).owner(User.currentUser.open_!).accessTokenKey(accessToken.value).accessTokenSecret(accessToken.secret).save                            
+                            Provider.create.authenticated(true).owner(User.currentUser.open_!).accessTokenKey(accessToken.value).accessTokenSecret(accessToken.secret).save                            
                             
                             getGoogleGroups()
                             getGoogleContacts()
@@ -51,7 +51,7 @@ class GoogleAuth {
     }
     
     def getTokenForUser(user: User) = {
-        val cp = ContactProvider.findAll(By(ContactProvider.owner, user)).head
+        val cp = Provider.findAll(By(Provider.owner, user)).head
         Token(cp.accessTokenKey, cp.accessTokenSecret)
     }
     
