@@ -26,20 +26,17 @@ class GoogleProvider extends LongKeyedMapper[GoogleProvider] with IdPK {
     val GetRequestToken = "OAuthGetRequestToken"
     val AuthorizeToken  = "OAuthAuthorizeToken"
     val GetAccessToken  = "OAuthGetAccessToken"
-
-    // Google API endpoints
     val account = :/("www.google.com").secure / "accounts"
     val m8 = :/("www.google.com").secure / "m8" / "feeds"
     val contacts = m8 / "contacts"
     val groups = m8 / "groups"
 
     val h = new Http
-    val consumer = Consumer(Props.get("googleConsumer.key").open_!, 
-                          Props.get("googleConsumer.secret").open_!)
+    val consumer = Consumer(Props.get("googleConsumer.key").open_!, Props.get("googleConsumer.secret").open_!)
 
     def initiateRequest() = {
-      var requestToken: Token = null
-      val Callback: String = SHtml.link(Props.get("host").open_! + "oauth_callback", () => {
+        var requestToken: Token = null
+        val Callback: String = SHtml.link(Props.get("host").open_! + "google_callback", () => {
                           val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
                           val accessToken =  h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)    
                           GoogleProvider.create.authenticated(true).owner(User.currentUser.open_!).accessTokenKey(accessToken.value).accessTokenSecret(accessToken.secret).save                            
@@ -49,32 +46,32 @@ class GoogleProvider extends LongKeyedMapper[GoogleProvider] with IdPK {
 
                           S.redirectTo(Props.get("host").open_!)
                       }, Text("")).attribute("href").get.text
-      val extras = Map("scope" -> m8.to_uri.toString, "oauth_callback" -> Callback)
-      requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
-      val url = (account / AuthorizeToken <<? requestToken to_uri).toString
-      S.redirectTo(url)   
+        val extras = Map("scope" -> m8.to_uri.toString, "google_callback" -> Callback)
+        requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
+        val url = (account / AuthorizeToken <<? requestToken to_uri).toString
+        S.redirectTo(url)   
     }
 
     def getTokenForUser(user: User) = {
-      val cp = GoogleProvider.findAll(By(GoogleProvider.owner, user)).head
-      Token(cp.accessTokenKey, cp.accessTokenSecret)
+        val cp = GoogleProvider.findAll(By(GoogleProvider.owner, user)).head
+        Token(cp.accessTokenKey, cp.accessTokenSecret)
     }
 
     def parseDate(dateString: String) = {
-      val parser =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
-      parser.parse(dateString)
+        val parser =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
+        parser.parse(dateString)
     }
 
     def getGoogleGroups() = {
-      def parseAndStoreGroups(feed: scala.xml.Elem) =
-          for (entry <- (feed \\ "entry")) {
-              val name = (entry \ "title").text
-              val lastUpdated = parseDate((entry \ "updated").text)
-              var googleId = (entry \ "id").text
-              Group.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
-          }
-      val accessToken = getTokenForUser(User.currentUser.open_!)
-      h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
+        def parseAndStoreGroups(feed: scala.xml.Elem) =
+            for (entry <- (feed \\ "entry")) {
+                val name = (entry \ "title").text
+                val lastUpdated = parseDate((entry \ "updated").text)
+                var googleId = (entry \ "id").text
+                Group.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated).save
+            }
+        val accessToken = getTokenForUser(User.currentUser.open_!)
+        h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
 
     def getGoogleContacts() = {
@@ -104,5 +101,4 @@ class GoogleProvider extends LongKeyedMapper[GoogleProvider] with IdPK {
     def getUserId(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractId)
     //def getTenKContacts(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, token) <> parse)
 }
-
 object GoogleProvider extends GoogleProvider with LongKeyedMetaMapper[GoogleProvider] {}

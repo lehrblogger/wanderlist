@@ -3,11 +3,25 @@
 		<lift:menu.item name="Login">Log In</lift:menu.item> 
 	</lift:Util.out> 
 	<lift:Util.in> 
-		<lift:Util.needsCp> 
-			<a href="/cp/oauth_start">Authenticate with Google!</a>
-		</lift:Util.needsCp>
-		<lift:Util.hasCp> 
-			<h3><lift:CL.name>Hi, <cl:name/></lift:CL.name></h3><br/>
+		<lift:Util.needsGoogleProvider> 
+			<a href="/provider/google_start">Authenticate with Google!</a>
+		</lift:Util.needsGoogleProvider>
+		<lift:Util.hasGoogleProvider> 
+			<h3><lift:CL.name>Hi, <cl:name/></lift:CL.name></h3>
+			<br/>
+			<lift:Util.needsFoursquareService> 
+				<a href="/service/foursquare_start">Now authenticate with Foursquare!</a>
+			</lift:Util.needsFoursquareService>
+			<lift:Util.hasFoursquareService> 
+				woo you have a foursquare service!
+			</lift:Util.hasFoursquareService>			
+			<br/>
+			<lift:Util.needsHotpotatoService> 
+				<a href="/service/hotpotato_start">Now authenticate with Hot Potato!</a>
+			</lift:Util.needsHotpotatoService>
+			<lift:Util.hasHotpotatoService> 
+				woo you have a hot potato service!
+			</lift:Util.hasHotpotatoService>
 			<div>
 				<h4>These are your groups:</h4>
 	   			<ol>
@@ -28,7 +42,7 @@
 					</lift:CL.listContacts>
 				</ol> 
 		 	</div>
-		</lift:Util.hasCp> 
+		</lift:Util.hasGoogleProvider> 
 
 		<lift:TD.add form="post"> 
 			<table> 

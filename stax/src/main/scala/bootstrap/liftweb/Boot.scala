@@ -18,13 +18,13 @@ import _root_.dispatch._
   * to modify lift's environment
   */
 class Boot {
-  def boot {
+    def boot {
     if (!DB.jndiJdbcConnAvailable_?)
-      DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
+        DB.defineConnectionManager(DefaultConnectionIdentifier, DBVendor)
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup, FoursquareService, HotpotatoService, TempToken)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -37,32 +37,42 @@ class Boot {
                   Menu(Loc("Testing Google Callback", List ("callback"), "Google Callback")) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
-    
+
     LiftRules.dispatch.append { 
-        case Req("cp" :: "oauth_start" :: Nil, _, _) => {
-            val gp = new GoogleProvider
-            gp.initiateRequest
+        case Req("provider" :: "google_start" :: Nil, _, _) => {
+            val google_provider = new GoogleProvider
+            google_provider.initiateRequest
+        }
+        case Req("service" :: "foursquare_start" :: Nil, _, _) => {
+            val foursquare_service = new FoursquareService
+            foursquare_service.initiateRequest
+        }
+        case Req("foursquare_callback" :: Nil, _, _) => {
+            val foursquare_service = new FoursquareService
+            val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
+            foursquare_service.exchangeToken(token)
+            S.redirectTo(Props.get("host").open_!)
         }
     }
-    
+
     // Show the spinny image when an Ajax call start
     LiftRules.ajaxStart =
-      Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+        Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
     // Make the spinny image go away when it ends
     LiftRules.ajaxEnd =
-      Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
+        Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
     LiftRules.early.append(makeUtf8)
 
     S.addAround(DB.buildLoanWrapper)
-  }
+    }
 
-  /**
-   * Force the request to be UTF-8
-   */
-  private def makeUtf8(req: HTTPRequest) {
-    req.setCharacterEncoding("UTF-8")
-  }
+    /**
+    * Force the request to be UTF-8
+    */
+    private def makeUtf8(req: HTTPRequest) {
+        req.setCharacterEncoding("UTF-8")
+    }
 
 }
 
