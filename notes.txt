@@ -38,3 +38,4 @@ SELECT COUNT(*) FROM contactemail INNER JOIN contact ON contactemail.contact=con
 
 <link href="http://www.google.com/m8/feeds/groups/lehrburger%40gmail.com/full/dfafa80985944e/1265017299061000" type="application/atom+xml" rel="edit" xmlns:gd="http://schemas.google.com/g/2005" xmlns:batch="http://schemas.google.com/gdata/batch" xmlns:gContact="http://schemas.google.com/contact/2008" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/" xmlns="http://www.w3.org/2005/Atom"></link>
 
+testing.txt
