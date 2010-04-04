@@ -39,8 +39,7 @@ class Boot {
 
     LiftRules.dispatch.append { 
         case Req("provider" :: "google_start" :: Nil, _, _) => {
-            val google_provider = new GoogleProvider
-            google_provider.initiateRequest
+            (new GoogleService).initiateRequest
         }
         case Req("service" :: "foursquare_start" :: Nil, _, _) => {
             val foursquare_service = new FoursquareService

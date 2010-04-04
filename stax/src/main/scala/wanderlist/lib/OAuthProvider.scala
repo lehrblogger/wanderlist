@@ -8,7 +8,7 @@ import dispatch.oauth.OAuth._
 import wanderlist.model._
 
 trait OAuthProvider {
-  val provider: AuthProvider.Value
+  val provider: AuthService.Value
 
   val GetRequestToken: String
   val AuthorizeToken: String
@@ -41,8 +41,8 @@ trait OAuthProvider {
   }
 }
 
-object FoursquareProvider extends OAuthProvider {
-  val provider = AuthProvider.Foursquare
+object FoursquareService extends OAuthProvider {
+  val provider = AuthService.Foursquare
 
   val GetRequestToken = "request_token"
   val AuthorizeToken  = "authorize"
@@ -50,8 +50,8 @@ object FoursquareProvider extends OAuthProvider {
   val account = :/("foursquare.com") / "oauth"
 }
 
-object GoogleProvider extends OAuthProvider {
-  val provider = AuthProvider.Google
+object GoogleService extends OAuthProvider {
+  val provider = AuthService.Google
 
   val GetRequestToken = "OAuthGetRequestToken"
   val AuthorizeToken  = "OAuthAuthorizeToken"

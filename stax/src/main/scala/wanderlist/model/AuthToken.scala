@@ -8,13 +8,13 @@ class AuthToken extends LongKeyedMapper[AuthToken] with IdPK {
   object owner extends MappedLongForeignKey(this, User)
   object accessTokenKey extends MappedString(this, 256)
   object accessTokenSecret extends MappedString(this, 256)
-  object provider extends MappedEnum(this, AuthProvider)
+  object provider extends MappedEnum(this, AuthService)
   object authenticated extends MappedBoolean(this)
 }
 
 object AuthToken extends AuthToken with LongKeyedMetaMapper[AuthToken]
 
-object AuthProvider extends Enumeration {
+object AuthService extends Enumeration {
   val Google = Value(1, "google")
   val Foursquare = Value(2, "foursquare")
 }
