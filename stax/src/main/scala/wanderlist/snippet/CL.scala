@@ -1,6 +1,5 @@
 package wanderlist.snippet 
 import wanderlist._ 
-import wanderlist.lib._
 import model._ 
 import net.liftweb._ 
 import http._ 
