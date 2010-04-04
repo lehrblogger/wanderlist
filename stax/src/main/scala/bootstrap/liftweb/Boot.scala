@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup, FoursquareService, HotpotatoService, TempToken)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup, FoursquareService, FlickrService, HotpotatoService, TempToken)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -51,6 +51,16 @@ class Boot {
             val foursquare_service = new FoursquareService
             val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
             foursquare_service.exchangeToken(token)
+            S.redirectTo(Props.get("host").open_!)
+        }
+        case Req("service" :: "flickr_start" :: Nil, _, _) => {
+            val flickrService = new FlickrService
+            flickrService.initiateRequest
+        }
+        case Req("flickr_callback" :: Nil, _, _) => {
+            val flickrService = new FlickrService
+            // val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
+            // foursquare_service.exchangeToken(token)
             S.redirectTo(Props.get("host").open_!)
         }
     }

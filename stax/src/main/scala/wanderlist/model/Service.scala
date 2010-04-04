@@ -82,3 +82,5 @@ object FoursquareServiceContact extends FoursquareServiceContact with LongKeyedM
         this.create.service(s).contact(c).save
 }
 
+
+
