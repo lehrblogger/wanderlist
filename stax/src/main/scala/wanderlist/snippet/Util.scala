@@ -12,21 +12,29 @@ class Util {
     def out(html: NodeSeq) = 
         if (!User.loggedIn_?) html else NodeSeq.Empty 
     
-    def hasGoogleProvider(html: NodeSeq) = 
-        if (GoogleProvider.findAll(By(GoogleProvider.owner, User.currentUser.open_!)) != Nil) html else NodeSeq.Empty 
-    
-    def needsGoogleProvider(html: NodeSeq) = 
-        if (GoogleProvider.findAll(By(GoogleProvider.owner, User.currentUser.open_!)) == Nil) html else NodeSeq.Empty
-
+    def hasGoogleService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Google)) != Nil) 
+            html 
+        else 
+            NodeSeq.Empty 
+        
+    def needsGoogleService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Google)) == Nil) 
+            html 
+        else 
+            NodeSeq.Empty
+        
     def hasFoursquareService(html: NodeSeq) = 
-        if (FoursquareService.findAll(By(FoursquareService.owner, User.currentUser.open_!)) != Nil) html else NodeSeq.Empty 
-
+        if (false) html else NodeSeq.Empty
+            
     def needsFoursquareService(html: NodeSeq) = 
-        if (FoursquareService.findAll(By(FoursquareService.owner, User.currentUser.open_!)) == Nil) html else NodeSeq.Empty
+        if (true) html else NodeSeq.Empty
     
     def hasHotpotatoService(html: NodeSeq) = 
-        if (HotpotatoService.findAll(By(HotpotatoService.owner, User.currentUser.open_!)) != Nil) html else NodeSeq.Empty 
-
+        if (false) html else NodeSeq.Empty
+        
     def needsHotpotatoService(html: NodeSeq) = 
-        if (HotpotatoService.findAll(By(HotpotatoService.owner, User.currentUser.open_!)) == Nil) html else NodeSeq.Empty
+        if (true) html else NodeSeq.Empty
 }
