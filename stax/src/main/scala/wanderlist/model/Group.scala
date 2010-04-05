@@ -15,4 +15,4 @@ class Group extends LongKeyedMapper[Group] with IdPK {
     object lastUpdated extends MappedDateTime(this)
     object contacts extends HasManyThrough(this, Contact, ContactGroup, ContactGroup.group, ContactGroup.contact) 
 }
-object Group extends Group with LongKeyedMetaMapper[Group]
+object Group extends Group with LongKeyedMetaMapper[Group] {}
