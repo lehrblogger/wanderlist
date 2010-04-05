@@ -50,14 +50,14 @@ class Boot {
             S.redirectTo("http://" + Props.get("host").open_!)
         }
 
-        // case Req("service" :: "foursquare_start" :: Nil, _, _) => {
-        //     FoursquareService.getRequestUrl
-        // }
-        // case Req("foursquare_callback" :: Nil, _, _) => {
-        //     val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
-        //     FoursquareService.exchangeToken(token)
-        //     S.redirectTo("http://" + Props.get("host").open_!)
-        // }
+        case Req("service" :: "foursquare_start" :: Nil, _, _) => {
+            S.redirectTo(FoursquareService.getRequestUrl)
+        }
+        case Req("foursquare_callback" :: Nil, _, _) => {
+            val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
+            FoursquareService.exchangeToken(token)
+            S.redirectTo("http://" + Props.get("host").open_!)
+        }
     }
 
     // Show the spinny image when an Ajax call start

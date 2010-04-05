@@ -27,10 +27,19 @@ class Util {
             NodeSeq.Empty
         
     def hasFoursquareService(html: NodeSeq) = 
-        if (false) html else NodeSeq.Empty
-            
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Foursquare)) != Nil) 
+            html 
+        else 
+            NodeSeq.Empty 
+
     def needsFoursquareService(html: NodeSeq) = 
-        if (true) html else NodeSeq.Empty
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Foursquare)) == Nil) 
+            html 
+        else 
+            NodeSeq.Empty
+
     
     def hasHotpotatoService(html: NodeSeq) = 
         if (false) html else NodeSeq.Empty
