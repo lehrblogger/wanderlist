@@ -31,25 +31,25 @@ object ContactGroup extends ContactGroup with LongKeyedMetaMapper[ContactGroup] 
 }
 
 
-
-class HotpotatoServiceContact extends LongKeyedMapper[HotpotatoServiceContact] with IdPK {
-    def getSingleton = HotpotatoServiceContact
-    object service extends MappedLongForeignKey(this, HotpotatoService)
-    object contact extends MappedLongForeignKey(this, Contact)
-}
-object HotpotatoServiceContact extends HotpotatoServiceContact with LongKeyedMetaMapper[HotpotatoServiceContact] {
-    def join (s: HotpotatoService, c: Contact) = 
-        this.create.service(s).contact(c).save
-}
-
-class FoursquareServiceContact extends LongKeyedMapper[FoursquareServiceContact] with IdPK {
-    def getSingleton = FoursquareServiceContact
-    object service extends MappedLongForeignKey(this, FoursquareService)
-    object contact extends MappedLongForeignKey(this, Contact)
-}
-object FoursquareServiceContact extends FoursquareServiceContact with LongKeyedMetaMapper[FoursquareServiceContact] {
-    def join (s: FoursquareService, c: Contact) = 
-        this.create.service(s).contact(c).save
-}
+// 
+// class HotpotatoServiceContact extends LongKeyedMapper[HotpotatoServiceContact] with IdPK {
+//     def getSingleton = HotpotatoServiceContact
+//     object service extends MappedLongForeignKey(this, HotpotatoService)
+//     object contact extends MappedLongForeignKey(this, Contact)
+// }
+// object HotpotatoServiceContact extends HotpotatoServiceContact with LongKeyedMetaMapper[HotpotatoServiceContact] {
+//     def join (s: HotpotatoService, c: Contact) = 
+//         this.create.service(s).contact(c).save
+// }
+// 
+// class FoursquareServiceContact extends LongKeyedMapper[FoursquareServiceContact] with IdPK {
+//     def getSingleton = FoursquareServiceContact
+//     object service extends MappedLongForeignKey(this, FoursquareService)
+//     object contact extends MappedLongForeignKey(this, Contact)
+// }
+// object FoursquareServiceContact extends FoursquareServiceContact with LongKeyedMetaMapper[FoursquareServiceContact] {
+//     def join (s: FoursquareService, c: Contact) = 
+//         this.create.service(s).contact(c).save
+// }
 
 

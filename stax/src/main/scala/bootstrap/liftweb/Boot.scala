@@ -9,7 +9,7 @@ import Helpers._
 import _root_.net.liftweb.mapper.{DB, ConnectionManager, Schemifier, DefaultConnectionIdentifier, ConnectionIdentifier}
 import _root_.java.sql.{Connection, DriverManager}
 import _root_.wanderlist.model._
-// import _root_.wanderlist.lib._
+import _root_.wanderlist.lib._
 import _root_.net.liftweb.http.provider.HTTPRequest
 import _root_.dispatch._
 
