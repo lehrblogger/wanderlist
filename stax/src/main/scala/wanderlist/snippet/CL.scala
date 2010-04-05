@@ -21,22 +21,23 @@ class CL {
     
     def listGroups(xhtml: NodeSeq) = { 
         val groups = Group.findAll(By(Group.owner, User.currentUser.open_!))
-        groups.flatMap(group => bind("cl", xhtml, "name" -> group.name))
+        groups.flatMap(group => bind("cl", xhtml, "name" -> group.value))
     }
     
     def listContacts(xhtml: NodeSeq) = { 
         Contact.findAll(By(Contact.owner, User.currentUser.open_!), MaxRows(30)).flatMap(
             contact => bind("cl", xhtml, 
                 "name"   -> contact.name,
-                "emails" -> ContactEmail.findAll(By(ContactEmail.contact, contact)).flatMap(
-                    contactemail => bind("e", chooseTemplate("email", "list", xhtml), 
-                        "address" -> contactemail.email.toString
+                "identifiers" -> Identifier.findAll(By(Identifier.contact, contact),
+                                               By(Identifier.owner, User.currentUser.open_!)).flatMap(
+                    identifier => bind("i", chooseTemplate("identifier", "list", xhtml), 
+                        "value" -> identifier.value
                     )
                 )
             )
         )
     }
-
+}
   //  
   // private def doList(reDraw: () => JsCmd)(html: NodeSeq): NodeSeq = 
   // toShow. 
@@ -78,6 +79,5 @@ class CL {
   //    }
   //    
      
-}
 // 
 // object QueryNotDone extends SessionVar(false)

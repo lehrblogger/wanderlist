@@ -3,7 +3,7 @@ import net.liftweb._
 import mapper._
 import scala.xml.{NodeSeq} 
 import wanderlist._ 
-import model._ 
+import wanderlist.model._ 
  
 class Util { 
     def in(html: NodeSeq) = 
