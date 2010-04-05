@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, GoogleProvider, Contact, ContactEmail, Group, ContactGroup, FoursquareService, HotpotatoService, TempToken)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, Contact, ContactEmail, Group, ContactGroup, AuthToken, TempToken)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -39,29 +39,24 @@ class Boot {
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
     LiftRules.dispatch.append { 
-        case Req("provider" :: "google_start" :: Nil, _, _) => {
-            val google_provider = new GoogleProvider
-            google_provider.initiateRequest
+        case Req("service" :: "google_start" :: Nil, _, _) => {
+             S.redirectTo(GoogleService.getRequestUrl)
         }
-        case Req("service" :: "foursquare_start" :: Nil, _, _) => {
-            val foursquare_service = new FoursquareService
-            foursquare_service.initiateRequest
+        case Req("service" :: GoogleService.callback :: Nil, _, _) => {
+            val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
+            GoogleService.exchangeToken(verifier)
+            GoogleService.getGroups()
+            GoogleService.getContacts()
+            S.redirectTo("http://" + Props.get("host").open_!)
         }
-        case Req("foursquare_callback" :: Nil, _, _) => {
-            val foursquare_service = new FoursquareService
-            val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
-            foursquare_service.exchangeToken(token)
-            S.redirectTo(Props.get("host").open_!)
-        }
-        // case Req("service" :: "flickr_start" :: Nil, _, _) => {
-        //     val flickrService = new FlickrService
-        //     flickrService.initiateRequest
+
+        // case Req("service" :: "foursquare_start" :: Nil, _, _) => {
+        //     FoursquareService.getRequestUrl
         // }
-        // case Req("flickr_callback" :: Nil, _, _) => {
-        //     val flickrService = new FlickrService
-        //     // val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
-        //     // foursquare_service.exchangeToken(token)
-        //     S.redirectTo(Props.get("host").open_!)
+        // case Req("foursquare_callback" :: Nil, _, _) => {
+        //     val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
+        //     FoursquareService.exchangeToken(token)
+        //     S.redirectTo("http://" + Props.get("host").open_!)
         // }
     }
 

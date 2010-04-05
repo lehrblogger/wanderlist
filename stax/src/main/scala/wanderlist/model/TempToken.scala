@@ -12,4 +12,5 @@ class TempToken extends LongKeyedMapper[TempToken] with IdPK {
     object key extends MappedString(this, 256)
     object secret extends MappedString(this, 256)
 }
-object TempToken extends TempToken with LongKeyedMetaMapper[TempToken] {}
+
+object TempToken extends TempToken with LongKeyedMetaMapper[TempToken]
