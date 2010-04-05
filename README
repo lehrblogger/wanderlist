@@ -1,6 +1,13 @@
 An in-progress tool to enable users to centrally manage their personal and professional relationships across a variety of social web applications.
 
 
+Goals for the next month:
+	1) import of contacts from various services
+	2) automatic consolidation of contacts based on shared identifiers
+	3) custom grouping of contacts (with possible group namespaces)
+	4) Identifier-based search on other services for people who you are not currently friends with
+
+
 I'm leaving the following production schedule purely for amusement:
 	yyyy-mm-dd: milestones
 	--------------------------------------------------
