@@ -9,4 +9,4 @@ class IdentifierSource extends LongKeyedMapper[IdentifierSource] with IdPK {
     object source extends MappedLongForeignKey(this, AuthToken)
 }
 
-object IdentifierSource extends IdentifierSource with LongKeyedMetaMapper[IdentifierSource]
+object IdentifierSource extends IdentifierSource with LongKeyedMetaMapper[IdentifierSource] {}
