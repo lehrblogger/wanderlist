@@ -43,9 +43,12 @@ trait OAuthProvider {
                         .provider(provider)
                  .saveMe
     }
-  
+
+    def getAuthTokenForUser(user: User) =
+        AuthToken.findAll(By(AuthToken.owner, user), By(AuthToken.provider, provider)).head        
+
     def getTokenForUser(user: User) = {
-        val token = AuthToken.findAll(By(AuthToken.owner, user), By(AuthToken.provider, provider)).head
+        val token = getAuthTokenForUser(user)
         Token(token.accessTokenKey, token.accessTokenSecret)
     }
 }
@@ -95,13 +98,16 @@ object GoogleService extends OAuthProvider {
     }
 
     def getContacts() = {
+        val authToken = getAuthTokenForUser(User.currentUser.open_!)
+
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "entry")) {
                 val name = (entry \ "title").text
                 val lastUpdated = parseDate((entry \ "updated").text)
                 var googleId = (entry \ "id").text
-                val newContact = Contact.create.name(name).owner(User.currentUser.open_!).googleId(googleId).lastUpdated(lastUpdated)
-                newContact.save  
+                val newContact = Contact.create.name(name).owner(User.currentUser.open_!).lastUpdated(lastUpdated).saveMe
+                val newIdentifier = Identifier.create.value(googleId).service(AuthService.Email).contact(newContact).saveMe
+                val newIdentifierSource = IdentifierSource.create.identifier(newIdentifier).source(authToken).saveMe
                 for (email <- (entry \\ "email")) {
                     ContactEmail.create.email((email \ "@address").toString).contact(newContact).save
                 }
@@ -112,7 +118,8 @@ object GoogleService extends OAuthProvider {
                 }
             }
         }
-        val accessToken = getTokenForUser(User.currentUser.open_!)
+        
+        val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
     }
 
