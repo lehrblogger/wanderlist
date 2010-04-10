@@ -16,7 +16,7 @@
     
     <!-- set default values for stax tasks -->
     <property name="stax.appid" value="" />
-    <property name="run.port" value="8080" />
+    <property name="run.port" value="80" />
     <property name="run.environment" value="" />
     
     <path id="webapp.classpath">

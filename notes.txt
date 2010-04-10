@@ -26,11 +26,18 @@
 
   mysql -u wluser_v1-dev -ptat1coith2cach -h ec2-174-129-9-255.compute-1.amazonaws.com -P 3306 -D wanderlist_v1-dev
 
-delete from contact;
-delete from contactgroup;
-delete from contactemail;
-delete from contactprovider;
-delete from group;   
+DROP TABLE authtoken;
+DROP TABLE contact;
+DROP TABLE contactemail;
+DROP TABLE contactgroup;
+DROP TABLE group_t;
+DROP TABLE identifier;
+DROP TABLE identifiersource;
+DROP TABLE temptoken;
+DROP TABLE todo;
+DROP TABLE users;
+SHOW TABLES;
+
 
 SELECT COUNT(*) FROM contactemail INNER JOIN contact ON contactemail.contact=contact.id WHERE contact.owner=1;
 
