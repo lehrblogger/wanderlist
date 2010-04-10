@@ -34,15 +34,13 @@ object GoogleService extends OAuthProvider {
               val name = (entry \ "title").text
               val lastUpdated = parseDate((entry \ "updated").text)
               val googleId = (entry \ "id").text
-              Group.create.owner(User.currentUser.open_!).name(name).value(googleId).lastUpdated(lastUpdated).save
+              Group.create.owner(User.currentUser.open_!).service(provider).name(name).value(googleId).lastUpdated(lastUpdated).save
           }
       val accessToken = getTokenForUser(User.currentUser.open_!)
       h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
 
     def getContacts() = {
-        val authToken = getAuthTokenForUser(User.currentUser.open_!)
-
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "entry")) {
                 val name = (entry \ "title").text
@@ -52,14 +50,18 @@ object GoogleService extends OAuthProvider {
                 for (email <- (entry \\ "email")) {
                     Identifier.createIfNeeded((email \ "@address").toString, AuthService.Email, newContact, User.currentUser.open_!, authToken)
                 }
-                //TODO phone numbers here
+                for (phone <- (entry \\ "phoneNumber")) {
+                    Identifier.createIfNeeded(phone.text, AuthService.Phone, newContact, User.currentUser.open_!, authToken)
+                }
                 for (googleGroup <- (entry \\ "groupMembershipInfo")) {
-                    val group = Group.findAll(By(Group.value, (googleGroup \ "@href").toString)).head
+                    val group = Group.findAll(By(Group.value, (googleGroup \ "@href").toString),
+                                              By(Group.service, provider                      )).head
                     ContactGroup.join(newContact, group)
                 }
             }
         }
         
+        val authToken = getAuthTokenForUser(User.currentUser.open_!)
         val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
     }
