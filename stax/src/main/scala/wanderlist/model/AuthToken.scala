@@ -17,6 +17,15 @@ object AuthService extends Enumeration {
     val Google     = Value(1, "google")
     val Foursquare = Value(2, "foursquare")
     val Twitter    = Value(3, "twitter")
+    val Vimeo      = Value(4, "vimeo")
     // val Hotpotato  = Value(4, "hotpotato")
     // val Facebook   = Value(5, "facebook")
+}
+
+object RelationshipType extends Enumeration {
+    val None    = Value(1, "none")
+    val Contact = Value(2, "contact")
+    val Friend  = Value(3, "friend")
+    val Family  = Value(4, "family")
+    val Blocked = Value(5, "blocked")
 }

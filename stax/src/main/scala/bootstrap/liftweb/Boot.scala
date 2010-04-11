@@ -70,6 +70,15 @@ class Boot {
             S.redirectTo("http://" + Props.get("host").open_!)
         }
         
+        case Req("service" :: VimeoService.start    :: Nil, _, _) => {
+            S.redirectTo(VimeoService.getRequestUrl)
+        }
+        case Req("service" :: VimeoService.callback ::  Nil, _, _) => {
+            val token = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
+            VimeoService.exchangeToken(token)
+            VimeoService.getContacts()
+            S.redirectTo("http://" + Props.get("host").open_!)
+        }
     }
 
     // Show the spinny image when an Ajax call start

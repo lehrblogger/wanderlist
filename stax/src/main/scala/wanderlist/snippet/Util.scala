@@ -51,6 +51,19 @@ class Util {
         else 
             NodeSeq.Empty
                     
+    def hasVimeoService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Vimeo)) != Nil) 
+            html 
+        else 
+            NodeSeq.Empty 
+    def needsVimeoService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Vimeo)) == Nil) 
+            html 
+        else 
+            NodeSeq.Empty
+                    
     def hasHotpotatoService(html: NodeSeq) = 
         if (false) html else NodeSeq.Empty
         
