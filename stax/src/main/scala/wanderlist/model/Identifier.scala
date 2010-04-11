@@ -8,15 +8,15 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
 
     object value extends MappedString(this, 256) 
     object lastUpdated extends MappedDateTime(this)
-    object service extends MappedEnum(this, AuthService)
+    object idType extends MappedEnum(this, IdentifierType)
     object contact extends MappedLongForeignKey(this, Contact)
     object owner extends MappedLongForeignKey(this, User)
 }
 
 object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
-    def createIfNeeded(value: String, service: AuthService.Value, contact: Contact, owner: User, source: AuthToken ) = {
+    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, source: AuthToken ) = {
         findAll(By(Identifier.value, value), 
-                By(Identifier.service, service), 
+                By(Identifier.idType, idType), 
                 By(Identifier.contact, contact), 
                 By(Identifier.owner, User)) match {
             case List(identifier) => {     
@@ -26,9 +26,21 @@ object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
                 }
             }
             case _ => {
-                val newIdentifier = Identifier.create.value(value).service(service).contact(contact).owner(owner).saveMe
+                val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).owner(owner).saveMe
                 IdentifierSource.create.identifier(newIdentifier).source(source).save
             }
         }
     }
 }
+
+object IdentifierType extends Enumeration {
+    val FullName      = Value(1, "full_name")
+    val Email         = Value(2, "email")
+    val Phone         = Value(3, "phone")
+    val GoogleId      = Value(4, "google_id")
+    val FoursquareId  = Value(5, "foursquare_id")
+    val TwitterId     = Value(6, "twitter_id")
+    val TwitterHandle = Value(7, "twitter_id")
+    val FacebookId    = Value(8, "facebook_id")
+}
+

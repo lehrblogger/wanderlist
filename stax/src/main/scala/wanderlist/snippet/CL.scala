@@ -27,7 +27,8 @@ class CL {
     def listContacts(xhtml: NodeSeq) = { 
         Contact.findAll(By(Contact.owner, User.currentUser.open_!), MaxRows(30)).flatMap(
             contact => bind("cl", xhtml, 
-                "name"   -> contact.name,
+                "name"   -> Identifier.findAll(By(Identifier.contact, contact),
+                                               By(Identifier.idType, IdentifierType.FullName)).head.value,
                 "identifiers" -> Identifier.findAll(By(Identifier.contact, contact),
                                                By(Identifier.owner, User.currentUser.open_!)).flatMap(
                     identifier => bind("i", chooseTemplate("identifier", "list", xhtml), 
