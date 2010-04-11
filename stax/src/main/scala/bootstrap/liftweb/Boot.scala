@@ -31,10 +31,13 @@ class Boot {
     Log.info("Run mode: " + Props.mode)
     Log.info("Database driver: " + DBVendor.driverName)
     Log.info("Database url: " + DBVendor.dbUrl)
-
+	
     // Build SiteMap
-    val entries = Menu(Loc("Home", List("index"), "Home")) ::
-                  Menu(Loc("Testing Google Callback", List ("callback"), "Google Callback")) ::
+    val entries = Menu(Loc("Home"    , List("index")   , "Home"              )) ::
+                  Menu(Loc("Add"     , List("add")     , "Add an Account"    )) ::
+                  Menu(Loc("Accounts", List("accounts"), "View your Accounts")) ::
+                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"  )) ::
+                  Menu(Loc("Contacts", List("contacts"), "View your Contacts")) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
 

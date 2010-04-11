@@ -16,8 +16,8 @@ object VimeoService extends OAuthProvider {
     val extras = Map.empty[String, String]
     val account = :/("vimeo.com") / "oauth"
     
-    // val api = :/("api.twitter.com") / "1"
-    // val contacts = api / "statuses" / "friends.xml"
+    val api = :/("api.twitter.com") / "1"
+    val contacts = api / "statuses" / "friends.xml"
     
     def getContacts() = {
         val authToken = getAuthTokenForUser(User.currentUser.open_!)

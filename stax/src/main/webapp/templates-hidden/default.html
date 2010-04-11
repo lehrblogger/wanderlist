@@ -46,37 +46,36 @@
 }
 
 
-  /* ]]> */
-  </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="column span-12 last" style="text-align: right">
-        <h1 class="alt">Wanderli.st<img id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
-      </div>
+    /* ]]> */
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="column span-12 last" style="text-align: right">
+                <h1 class="alt">Wanderli.st<img id="ajax-loader" style="display:none; margin-bottom: 0px; margin-left: 5px" src="/images/ajax-loader.gif"/></h1>
+            </div>
+            
+            <hr/>
+            
+            <div class="column span-6 colborder sidebar">
+                <hr class="space" />
+                <lift:Menu.builder />	
+                <div>
+                    <lift:snippet type="msgs"/>
+                    <hr class="space" />
+                </div>
+            </div>
+        	
+          	<div class="column span-17 last">
+				<lift:bind name="content" />
+          	</div>
 
-      <hr/>
-
-      <div class="column span-6 colborder sidebar">
-        <hr class="space" />
-        <lift:Menu.builder />	
-        <div>
-          <lift:snippet type="msgs"/>
-          <hr class="space" />
-        </div>
-      </div>
-
-      <div class="column span-17 last">
-        <lift:bind name="content" />
-      </div>
-
-      <hr />
-      <div class="column span-23 last" style="text-align: center">
-        <h4 class="alt">
-          visit <a href="http://wanderli.st">http://wanderli.st</a> for more info.
+            <hr />
+            <div class="column span-23 last" style="text-align: center">
+              	<h4 class="alt">
+                  	visit <a href="http://wanderli.st">http://wanderli.st</a> for more info.
 				</h4>
-      </div>
-      
-    </div>
-  </body>
+            </div>
+        </div>
+    </body>
 </html>
