@@ -11,16 +11,15 @@ import java.text.SimpleDateFormat
 object GoogleService extends OAuthProvider {
     val provider = AuthService.Google
 
-    val m8 = :/("www.google.com").secure / "m8" / "feeds"
-    val contacts = m8 / "contacts"
-    val groups = m8 / "groups"
+    val api = :/("www.google.com").secure / "m8" / "feeds"
+    val contacts = api / "contacts"
+    val groups = api / "groups"
     
     val GetRequestToken = "OAuthGetRequestToken"
     val AuthorizeToken  = "OAuthAuthorizeToken"
     val GetAccessToken  = "OAuthGetAccessToken"
-    
-    val callback = "google_callback"
-    val extras = Map("scope" -> m8.to_uri.toString, "oauth_callback" -> (:/(Props.get("host").open_!) / "service" / callback).to_uri.toString)
+
+    val extras = Map("scope" -> api.to_uri.toString, "oauth_callback" -> (:/(Props.get("host").open_!) / "service" / callback).to_uri.toString)
     val account = :/("www.google.com").secure / "accounts" 
 
     def parseDate(dateString: String) = {
@@ -41,12 +40,13 @@ object GoogleService extends OAuthProvider {
     }
 
     def getContacts() = {
+        val authToken = getAuthTokenForUser(User.currentUser.open_!)
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "entry")) {
-                val name = (entry \ "title").text
-                val lastUpdated = parseDate((entry \ "updated").text)
-                val newContact = Contact.create.name(name).owner(User.currentUser.open_!).lastUpdated(lastUpdated).saveMe
-                Identifier.createIfNeeded((entry \ "id").text, AuthService.Google, newContact, User.currentUser.open_!, authToken)
+                //val lastUpdated = parseDate((entry \ "updated").text)
+                val newContact = Contact.create.owner(User.currentUser.open_!).lastUpdated(lastUpdated).saveMe
+                Identifier.createIfNeeded((entry \ "id"   ).text, AuthService.Google, newContact, User.currentUser.open_!, authToken)
+                Identifier.createIfNeeded((entry \ "title").text, AuthService.Name,   newContact, User.currentUser.open_!, authToken)
                 for (email <- (entry \\ "email")) {
                     Identifier.createIfNeeded((email \ "@address").toString, AuthService.Email, newContact, User.currentUser.open_!, authToken)
                 }
@@ -60,8 +60,6 @@ object GoogleService extends OAuthProvider {
                 }
             }
         }
-        
-        val authToken = getAuthTokenForUser(User.currentUser.open_!)
         val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
     }

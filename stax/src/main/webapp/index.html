@@ -6,21 +6,16 @@
 		<lift:Util.needsGoogleService> 
 			<a href="/service/google_start">Authenticate with Google!</a>
 		</lift:Util.needsGoogleService>
+		<lift:Util.hasGoogleService>
+			woo you have a google service!
+		</lift:Util.hasGoogleService>
 		<br/>
+		
 		<lift:Util.needsFoursquareService> 
-			<a href="/service/foursquare_start">Now authenticate with Foursquare!</a>
+			<a href="/service/foursquare_start">Authenticate with Foursquare!</a>
 		</lift:Util.needsFoursquareService>
 		<lift:Util.hasFoursquareService> 
 			woo you have a foursquare service!
-		</lift:Util.hasFoursquareService>			
-		<br/>
-		<lift:Util.needsHotpotatoService> 
-			<a href="/service/hotpotato_start">Now authenticate with Hot Potato!</a>
-		</lift:Util.needsHotpotatoService>
-		<lift:Util.hasHotpotatoService> 
-			woo you have a hot potato service!
-		</lift:Util.hasHotpotatoService>
-		<lift:Util.hasGoogleService>
 			<h3><lift:CL.name>Hi, <cl:name/></lift:CL.name></h3>
 			<div>
 				<h4>These are your groups:</h4>
@@ -42,8 +37,21 @@
 					</lift:CL.listContacts>
 				</ol> 
 		 	</div>
-		</lift:Util.hasGoogleService> 
-
+		</lift:Util.hasFoursquareService>			
+		<br/>
+		
+		<lift:Util.needsHotpotatoService> 
+			<a href="/service/hotpotato_start">Authenticate with Hot Potato!</a>
+		</lift:Util.needsHotpotatoService>
+		<lift:Util.hasHotpotatoService> 
+			woo you have a hot potato service!
+		</lift:Util.hasHotpotatoService>
+		
+		
+		
+		<br/>
+		<br/>
+		<br/>
 		<lift:TD.add form="post"> 
 			<table> 
 	   		<tr> 

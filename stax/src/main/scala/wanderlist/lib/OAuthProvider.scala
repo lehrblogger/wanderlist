@@ -12,15 +12,17 @@ trait OAuthProvider {
     val GetRequestToken: String
     val AuthorizeToken: String
     val GetAccessToken: String
-    val callback: String
     val extras: Map[String,String]
     val account: dispatch.Request
-    
+    val api: dispatch.Request
+
     val h = new dispatch.Http
     lazy val consumer = oauth.Consumer(
        Props.get(provider + "Consumer.key").open_!,
        Props.get(provider + "Consumer.secret").open_!)
-
+    lazy val start    = provider + "_start"
+    lazy val callback = provider + "_callback"
+    
     def getRequestUrl() = {
         val requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
         TempToken.findAll(By(TempToken.owner, User.currentUser.open_!)).foreach(_.delete_!)

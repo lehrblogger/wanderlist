@@ -7,6 +7,7 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     def getSingleton = Identifier 
 
     object value extends MappedString(this, 256) 
+    object lastUpdated extends MappedDateTime(this)
     object service extends MappedEnum(this, AuthService)
     object contact extends MappedLongForeignKey(this, Contact)
     object owner extends MappedLongForeignKey(this, User)

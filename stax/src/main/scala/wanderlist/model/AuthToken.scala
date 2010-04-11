@@ -14,11 +14,12 @@ class AuthToken extends LongKeyedMapper[AuthToken] with IdPK {
 object AuthToken extends AuthToken with LongKeyedMetaMapper[AuthToken]
 
 object AuthService extends Enumeration {
-    val Email      = Value(1, "email")
-    val Phone      = Value(2, "phone")
-    val Google     = Value(3, "google")
-    val Foursquare = Value(4, "foursquare")
-    val Twitter    = Value(5, "twitter")
-    val Hotpotato  = Value(6, "hotpotato")
-    val Facebook   = Value(7, "facebook")
+    val Name       = Value(1, "name")
+    val Email      = Value(2, "email")
+    val Phone      = Value(3, "phone")
+    val Google     = Value(4, "google")
+    val Foursquare = Value(5, "foursquare")
+    val Twitter    = Value(6, "twitter")
+    val Hotpotato  = Value(7, "hotpotato")
+    val Facebook   = Value(8, "facebook")
 }
