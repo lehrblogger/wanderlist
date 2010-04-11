@@ -1,20 +1,14 @@
-<lift:surround with="default" at="content"> 
-	<lift:Util.out> 
-		<h2>wander the <a href="http://xkcd.com/256/">internet</a>, bring your <a href="http://www.facebook.com/home.php#/friends/">f</a><a href="http://twitter.com/following">r</a><a href="http://foursquare.com/manage_friends">i</a><a href="http://www.flickr.com/photos/friends/">e</a><a href="http://www.google.com/contacts">n</a><a href="http://www.linkedin.com/connections?trk=hb_side_cnts is">d</a><a href="https://github.com/">s</a></h2>
-		Please <lift:menu.item name="Login">Log In</lift:menu.item> 
-	</lift:Util.out> 
-	<lift:Util.in>
-		<h3>Add an Account</h3>
-		<p>
-			Here you can use OAuth to add accounts on various social web sites, and we'll fetch information about your friends/contacts on those services.
-		</p>
-		
-		Click to authenticate with:
-		<ul>
-			<li><a href="/service/google_start">Google</a></li>
-			<li><a href="/service/twitter_start">Twitter</a></li>
-			<li><a href="/service/foursquare_start">Foursquare</a></li>
-			<li><a href="/service/vimeo_start">Vimeo</a></li>
-		</ul>
-	</lift:Util.in>
+<lift:surround with="login" at="content"> 
+	<h3>Add an Account</h3>
+	<p>
+		Here you can use OAuth to add accounts on various social web sites, and we'll fetch information about your friends/contacts on those services.
+	</p>
+	
+	Click to authenticate with:
+	<ul>
+		<li><a href="/service/google_start">Google</a></li>
+		<li><a href="/service/twitter_start">Twitter</a></li>
+		<li><a href="/service/foursquare_start">Foursquare</a></li>
+		<li><a href="/service/vimeo_start">Vimeo</a></li>
+	</ul>
 </lift:surround>
