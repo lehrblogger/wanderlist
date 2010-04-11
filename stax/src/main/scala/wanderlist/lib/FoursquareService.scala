@@ -19,7 +19,7 @@ object FoursquareService extends OAuthProvider {
   val contacts = api / "friends"
   
   def getContacts() = {
-      val authToken = getAuthTokenForUser(User.currentUser.open_!)
+      val authToken = getAccountForUser(User.currentUser.open_!)
       def parseAndStoreContacts(feed: scala.xml.Elem) = {
           for (entry <- (feed \\ "user")) { 
               val newContact = Contact.create.owner(User.currentUser.open_!).saveMe

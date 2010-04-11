@@ -12,22 +12,21 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     object contact extends MappedLongForeignKey(this, Contact)
     object owner extends MappedLongForeignKey(this, User)
 }
-
 object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
-    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, source: AuthToken ) = {
+    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, account: Account ) = {
         findAll(By(Identifier.value, value), 
                 By(Identifier.idType, idType), 
                 By(Identifier.contact, contact), 
                 By(Identifier.owner, User)) match {
             case List(identifier) => {     
-                IdentifierSource.findAll(By(IdentifierSource.identifier, this), By(IdentifierSource.source, source)) match {
-                    case List(identifierSource) => {/* we have both objects already! */}
-                    case _ => IdentifierSource.create.identifier(this).source(source).save
+                IdentifierAccount.findAll(By(IdentifierAccount.identifier, this), By(IdentifierAccount.account, account)) match {
+                    case List(identifierAccount) => {/* we have both objects already! */}
+                    case _ => IdentifierAccount.create.identifier(this).account(account).save
                 }
             }
             case _ => {
                 val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).owner(owner).saveMe
-                IdentifierSource.create.identifier(newIdentifier).source(source).save
+                IdentifierAccount.create.identifier(newIdentifier).account(account).save
             }
         }
     }
@@ -40,7 +39,7 @@ object IdentifierType extends Enumeration {
     val GoogleId      = Value(4, "google_id")
     val FoursquareId  = Value(5, "foursquare_id")
     val TwitterId     = Value(6, "twitter_id")
-    val TwitterHandle = Value(7, "twitter_id")
+    val TwitterHandle = Value(7, "twitter_handle") //TODO these can change so should not be Identifiers
     val FacebookId    = Value(8, "facebook_id")
 }
 

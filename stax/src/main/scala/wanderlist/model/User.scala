@@ -22,11 +22,6 @@ object User extends User with MetaMegaProtoUser[User] {
  */
 class User extends MegaProtoUser[User] {
   def getSingleton = User // what's the "meta" server
-
-  // define an additional field for a personal essay
-  object textArea extends MappedTextarea(this, 2048) {
-      override def textareaRows  = 10
-      override def textareaCols = 50
-      override def displayName = "Personal Essay"
-  }
+  
+  object self extends MappedLongForeignKey(this, Contact)
 }

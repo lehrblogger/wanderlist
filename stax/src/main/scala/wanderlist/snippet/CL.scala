@@ -15,7 +15,7 @@ import scala.xml.{NodeSeq, Text}
  
 class CL { 
     def name(xhtml: NodeSeq) = { 
-        //val token = GoogleService.getTokenForUser(User.currentUser.open_!)
+        //val token = GoogleService.getAccessTokenForUser(User.currentUser.open_!)
         bind("cl", xhtml, "name" -> "fix this later")//GoogleService.getUserId(token))
     }   
     

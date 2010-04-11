@@ -35,7 +35,7 @@ trait OAuthProvider {
         TempToken.findAll(By(TempToken.owner, User.currentUser.open_!)).foreach(_.delete_!)
         val requestToken = new Token(tempToken.key, tempToken.secret)
         val accessToken = h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
-        AuthToken.create.authenticated(true)
+        Account.create.authenticated(true)
                         .owner(User.currentUser.open_!)
                         .accessTokenKey(accessToken.value)
                         .accessTokenSecret(accessToken.secret)
@@ -43,11 +43,11 @@ trait OAuthProvider {
                  .saveMe
     }
 
-    def getAuthTokenForUser(user: User) =
-        AuthToken.findAll(By(AuthToken.owner, user), By(AuthToken.provider, provider)).head        
+    def getAccountForUser(user: User) =
+        Account.findAll(By(Account.owner, user), By(Account.provider, provider)).head        
 
     def getTokenForUser(user: User) = {
-        val token = getAuthTokenForUser(user)
+        val token = getAccountForUser(user)
         Token(token.accessTokenKey, token.accessTokenSecret)
     }
 }

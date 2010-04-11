@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, AuthToken, Contact, ContactGroup, Group, Identifier, IdentifierSource, TempToken)
+    Schemifier.schemify(true, Log.infoF _, User, ToDo, Account, Contact, ContactGroup, Group, Identifier, IdentifierAccount, TempToken)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)
@@ -48,6 +48,7 @@ class Boot {
         case Req("service" :: GoogleService.callback :: Nil, _, _) => {
             val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
             GoogleService.exchangeToken(verifier)
+            GoogleService.getInfo()
             GoogleService.getGroups()
             GoogleService.getContacts()
             S.redirectTo("http://" + Props.get("host").open_!)
@@ -59,6 +60,7 @@ class Boot {
         case Req("service" :: FoursquareService.callback ::  Nil, _, _) => {
             val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
             FoursquareService.exchangeToken(token)
+            FoursquareService.getInfo()
             FoursquareService.getContacts()
             S.redirectTo("http://" + Props.get("host").open_!)
         }
@@ -69,17 +71,8 @@ class Boot {
         case Req("service" :: TwitterService.callback ::  Nil, _, _) => {
             val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
             TwitterService.exchangeToken(token)
+            TwitterService.getInfo()
             TwitterService.getContacts()
-            S.redirectTo("http://" + Props.get("host").open_!)
-        }
-        
-        case Req("service" :: VimeoService.start    :: Nil, _, _) => {
-            S.redirectTo(VimeoService.getRequestUrl)
-        }
-        case Req("service" :: VimeoService.callback ::  Nil, _, _) => {
-            val token = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
-            VimeoService.exchangeToken(token)
-            VimeoService.getContacts()
             S.redirectTo("http://" + Props.get("host").open_!)
         }
     }

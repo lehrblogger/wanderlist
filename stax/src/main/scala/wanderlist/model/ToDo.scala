@@ -31,7 +31,6 @@ class ToDo extends LongKeyedMapper[ToDo] with IdPK {
         super.validations 
    }
 }
-
 object ToDo extends ToDo with LongKeyedMetaMapper[ToDo] { 
  lazy val priorityList = (1 to 10). 
       map(v => (v.toString, v.toString)) 

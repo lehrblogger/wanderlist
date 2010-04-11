@@ -35,12 +35,12 @@ object GoogleService extends OAuthProvider {
               val googleId = (entry \ "id").text
               Group.create.owner(User.currentUser.open_!).service(provider).name(name).value(googleId).lastUpdated(lastUpdated).save
           }
-      val accessToken = getTokenForUser(User.currentUser.open_!)
+      val accessToken = getAccessTokenForUser(User.currentUser.open_!)
       h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
 
     def getContacts() = {
-        val authToken = getAuthTokenForUser(User.currentUser.open_!)
+        val authToken = getAccountForUser(User.currentUser.open_!)
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "entry")) {
                 val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
@@ -63,9 +63,8 @@ object GoogleService extends OAuthProvider {
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
     }
 
-    def extractId(feed: scala.xml.Elem): String = (feed \ "id").text
-    
-    def getUserId(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractId)
+    def extractHandleAndId(feed: scala.xml.Elem): String = (feed \ "id").text :: ((feed \ "author") \ "email").text :: Nil
+    def getUserInfo(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractHandleAndId)
     
 //def getTenKContacts(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, token) <> parse)
 }

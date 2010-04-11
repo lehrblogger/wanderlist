@@ -13,53 +13,53 @@ class Util {
         if (!User.loggedIn_?) html else NodeSeq.Empty 
     
     def hasGoogleService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Google)) != Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Google)) != Nil) 
             html 
         else 
             NodeSeq.Empty 
     def needsGoogleService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Google)) == Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Google)) == Nil) 
             html 
         else 
             NodeSeq.Empty
         
     def hasFoursquareService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Foursquare)) != Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Foursquare)) != Nil) 
             html 
         else 
             NodeSeq.Empty 
     def needsFoursquareService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Foursquare)) == Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Foursquare)) == Nil) 
             html 
         else 
             NodeSeq.Empty
 
     def hasTwitterService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Twitter)) != Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Twitter)) != Nil) 
             html 
         else 
             NodeSeq.Empty 
     def needsTwitterService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Twitter)) == Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Twitter)) == Nil) 
             html 
         else 
             NodeSeq.Empty
                     
     def hasVimeoService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Vimeo)) != Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Vimeo)) != Nil) 
             html 
         else 
             NodeSeq.Empty 
     def needsVimeoService(html: NodeSeq) = 
-        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
-                              By(AuthToken.provider, AuthService.Vimeo)) == Nil) 
+        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
+                              By(Account.provider, AuthService.Vimeo)) == Nil) 
             html 
         else 
             NodeSeq.Empty
