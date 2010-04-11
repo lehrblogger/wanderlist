@@ -46,7 +46,7 @@ trait OAuthProvider {
     def getAccountForUser(user: User) =
         Account.findAll(By(Account.owner, user), By(Account.provider, provider)).head        
 
-    def getTokenForUser(user: User) = {
+    def getAccessTokenForUser(user: User) = {
         val token = getAccountForUser(user)
         Token(token.accessTokenKey, token.accessTokenSecret)
     }

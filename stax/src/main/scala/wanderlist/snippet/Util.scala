@@ -50,23 +50,4 @@ class Util {
             html 
         else 
             NodeSeq.Empty
-                    
-    def hasVimeoService(html: NodeSeq) = 
-        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
-                              By(Account.provider, AuthService.Vimeo)) != Nil) 
-            html 
-        else 
-            NodeSeq.Empty 
-    def needsVimeoService(html: NodeSeq) = 
-        if (Account.findAll(By(Account.owner, User.currentUser.open_!), 
-                              By(Account.provider, AuthService.Vimeo)) == Nil) 
-            html 
-        else 
-            NodeSeq.Empty
-                    
-    def hasHotpotatoService(html: NodeSeq) = 
-        if (false) html else NodeSeq.Empty
-        
-    def needsHotpotatoService(html: NodeSeq) = 
-        if (true) html else NodeSeq.Empty
 }

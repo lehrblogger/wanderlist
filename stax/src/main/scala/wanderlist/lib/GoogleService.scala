@@ -62,9 +62,9 @@ object GoogleService extends OAuthProvider {
         val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
     }
-
-    def extractHandleAndId(feed: scala.xml.Elem): String = (feed \ "id").text :: ((feed \ "author") \ "email").text :: Nil
-    def getUserInfo(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractHandleAndId)
-    
+    // 
+    // def extractHandleAndId(feed: scala.xml.Elem): String = (feed \ "id").text :: ((feed \ "author") \ "email").text :: Nil
+    // def getUserInfo(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, token) <> extractHandleAndId)
+    // 
 //def getTenKContacts(token: Token) = h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, token) <> parse)
 }
