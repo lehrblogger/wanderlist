@@ -18,7 +18,6 @@ class Util {
             html 
         else 
             NodeSeq.Empty 
-        
     def needsGoogleService(html: NodeSeq) = 
         if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
                               By(AuthToken.provider, AuthService.Google)) == Nil) 
@@ -32,7 +31,6 @@ class Util {
             html 
         else 
             NodeSeq.Empty 
-
     def needsFoursquareService(html: NodeSeq) = 
         if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
                               By(AuthToken.provider, AuthService.Foursquare)) == Nil) 
@@ -40,7 +38,19 @@ class Util {
         else 
             NodeSeq.Empty
 
-    
+    def hasTwitterService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Twitter)) != Nil) 
+            html 
+        else 
+            NodeSeq.Empty 
+    def needsTwitterService(html: NodeSeq) = 
+        if (AuthToken.findAll(By(AuthToken.owner, User.currentUser.open_!), 
+                              By(AuthToken.provider, AuthService.Twitter)) == Nil) 
+            html 
+        else 
+            NodeSeq.Empty
+                    
     def hasHotpotatoService(html: NodeSeq) = 
         if (false) html else NodeSeq.Empty
         

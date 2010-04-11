@@ -39,7 +39,7 @@ class Boot {
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
     LiftRules.dispatch.append { 
-        case Req("service" :: GoogleService.start :: Nil, _, _) => {
+        case Req("service" :: GoogleService.start    :: Nil, _, _) => {
              S.redirectTo(GoogleService.getRequestUrl)
         }
         case Req("service" :: GoogleService.callback :: Nil, _, _) => {
@@ -50,7 +50,7 @@ class Boot {
             S.redirectTo("http://" + Props.get("host").open_!)
         }
 
-        case Req("service" :: FoursquareService.start :: Nil, _, _) => {
+        case Req("service" :: FoursquareService.start    :: Nil, _, _) => {
             S.redirectTo(FoursquareService.getRequestUrl)
         }
         case Req("service" :: FoursquareService.callback ::  Nil, _, _) => {
@@ -59,6 +59,17 @@ class Boot {
             FoursquareService.getContacts()
             S.redirectTo("http://" + Props.get("host").open_!)
         }
+        
+        case Req("service" :: TwitterService.start    :: Nil, _, _) => {
+            S.redirectTo(TwitterService.getRequestUrl)
+        }
+        case Req("service" :: TwitterService.callback ::  Nil, _, _) => {
+            val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
+            TwitterService.exchangeToken(token)
+            TwitterService.getContacts()
+            S.redirectTo("http://" + Props.get("host").open_!)
+        }
+        
     }
 
     // Show the spinny image when an Ajax call start
