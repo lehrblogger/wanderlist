@@ -18,6 +18,7 @@ object GoogleService extends OAuthProvider {
     val GetRequestToken = "OAuthGetRequestToken"
     val AuthorizeToken  = "OAuthAuthorizeToken"
     val GetAccessToken  = "OAuthGetAccessToken"
+    val VerifierParameter = "oauth_verifier"
 
     val extras = Map("scope" -> api.to_uri.toString, "oauth_callback" -> (:/(Props.get("host").open_!) / "service" / callback).to_uri.toString)
     val account = :/("www.google.com").secure / "accounts" 

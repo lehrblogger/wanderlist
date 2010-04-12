@@ -12,6 +12,8 @@ object FoursquareService extends OAuthProvider {
   val GetRequestToken = "request_token"
   val AuthorizeToken  = "authorize"
   val GetAccessToken  = "access_token"
+  val VerifierParameter = "oauth_token"
+  
   
   val extras = Map.empty[String, String]
   val account = :/("foursquare.com") / "oauth"

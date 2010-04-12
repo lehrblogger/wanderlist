@@ -1,17 +1,18 @@
 package wanderlist.lib
+import net.liftweb.http.S
 import net.liftweb.mapper._
 import net.liftweb.util.Props
 import dispatch._
 import dispatch.oauth._
 import dispatch.oauth.OAuth._
 import wanderlist.model._
-
 trait OAuthProvider {
     val provider: AuthService.Value
 
     val GetRequestToken: String
     val AuthorizeToken: String
     val GetAccessToken: String
+    val VerifierParameter: String
     val extras: Map[String,String]
     val account: dispatch.Request
     val api: dispatch.Request
