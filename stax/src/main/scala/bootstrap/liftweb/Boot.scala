@@ -33,11 +33,11 @@ class Boot {
     Log.info("Database url: " + DBVendor.dbUrl)
 	
     // Build SiteMap
-    val entries = Menu(Loc("Home"    , List("index")   , "Home"              )) ::
-                  Menu(Loc("Add"     , List("add")     , "Add an Account"    )) ::
-                  Menu(Loc("Accounts", List("accounts"), "View your Accounts")) ::
-                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"  )) ::
-                  Menu(Loc("Contacts", List("contacts"), "View your Contacts")) ::
+    val entries = Menu(Loc("Home"    , List("index")   , "Home"                )) ::
+                  Menu(Loc("Add"     , List("add")     , "Add an Account"      )) ::
+                  Menu(Loc("Accounts", List("accounts"), "Manage your Accounts")) ::
+                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"    )) ::
+                  Menu(Loc("Contacts", List("contacts"), "View your Contacts"  )) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
 
@@ -48,9 +48,9 @@ class Boot {
                  S.redirectTo(oauthService.getRequestUrl)
             }
             case Req("service" :: oauthService.callback :: Nil, _, _) => {
-                val verifier = java.net.URLDecoder.decode(S.param(oauthService.VerifierParameter).open_!, "UTF-8")
+                val verifier = S.param(oauthService.VerifierParameter).open_!
                 oauthService.exchangeToken(verifier)
-                S.redirectTo("http://" + Props.get("host").open_! + "/accounts")
+                S.redirectTo("http://" + Props.get("host").open_! + "accounts")
             }
         }
     }
