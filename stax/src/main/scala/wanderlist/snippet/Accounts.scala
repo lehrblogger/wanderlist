@@ -15,9 +15,16 @@ import scala.xml.{NodeSeq, Text}
  
 class Accounts { 
     def listAccounts(xhtml: NodeSeq) = { 
-        val accounts = Account.findAll(By(Account.owner, User.currentUser.open_!))
-        accounts.flatMap(account => bind("account", xhtml, "type" -> account.provider))
-        //"name" -> account.accountId,
-    
+        Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(
+            account => bind("account", xhtml, 
+                "type" -> account.provider,
+                "identifiers" -> IdentifierAccount.findAll(By(IdentifierAccount.account, account)).flatMap(
+                    indentifierAccount => bind("ident", chooseTemplate("identifier", "list", xhtml), 
+                        "value" -> indentifierAccount.identifier.obj.open_!.value
+                    )
+                ),
+                "notes" -> account.notes
+            )
+        )
     }
 }

@@ -3,9 +3,20 @@
 	each of these will get more info about the account, as well as how many contacts it has
 	if the number of contacts is zero, it will have a link that will start the comet actor
 	that will fetch the contacts and update the page
+	
 	<ol>
 		<lift:Accounts.listAccounts> 
-			<li><account:type/></li> 
+			<li>
+				<account:type/>
+				<account:identifiers>
+					<identifier:list>
+						<ul>
+							<li><ident:value/></li>
+						</ul>
+					</identifier:list>
+				</account:identifiers>
+				<account:notes/>
+			</li> 
 		</lift:Accounts.listAccounts>
 	</ol>
 </lift:surround>
