@@ -13,7 +13,8 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     object owner extends MappedLongForeignKey(this, User)
 }
 object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
-    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, account: Account ) = {
+    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, account: Account ): Unit = {
+        if (value == "") return
         findAll(By(Identifier.value, value), 
                 By(Identifier.idType, idType), 
                 By(Identifier.contact, contact), 

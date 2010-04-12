@@ -24,12 +24,10 @@ object GoogleService extends OAuthProvider {
     val account = :/("www.google.com").secure / "accounts" 
 
     override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
-        def parseAndStoreSelfInfo(feed: scala.xml.Elem) = {
-            Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, User.currentUser.open_!, account)
-            Identifier.createIfNeeded(((feed \ "author") \ "name" ).text, IdentifierType.FullName, self, User.currentUser.open_!, account)
-            Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, User.currentUser.open_!, account)
-        }
-        h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> parseAndStoreSelfInfo)
+        val feed = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
+        Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, User.currentUser.open_!, account)
+        Identifier.createIfNeeded(((feed \ "author") \ "name" ).text, IdentifierType.FullName, self, User.currentUser.open_!, account)
+        Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, User.currentUser.open_!, account)
     }
     
     def parseDate(dateString: String) = {

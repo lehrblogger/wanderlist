@@ -19,6 +19,15 @@ object TwitterService extends OAuthProvider {
     
     val api = :/("api.twitter.com") / "1"
     val contacts = api / "statuses" / "friends.xml"
+    val userInfo = api / "statuses" / "user_timeline.xml"
+    
+    override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
+        val feed = h(userInfo <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
+        val user = ((feed \\ "status") \ "user")
+        Identifier.createIfNeeded((user \ "id"         ).text, IdentifierType.TwitterId    , self, User.currentUser.open_!, account)
+        Identifier.createIfNeeded((user \ "screen_name").text, IdentifierType.TwitterHandle, self, User.currentUser.open_!, account)
+        Identifier.createIfNeeded((user \ "name"       ).text, IdentifierType.FullName     , self, User.currentUser.open_!, account) 
+    }
     
     def getContacts() = {
         val authToken = getAccountForUser(User.currentUser.open_!)
@@ -38,4 +47,3 @@ object TwitterService extends OAuthProvider {
         //TODO implement paging for Twitter
     }
 }
-

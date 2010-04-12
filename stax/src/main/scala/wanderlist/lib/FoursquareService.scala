@@ -19,6 +19,17 @@ object FoursquareService extends OAuthProvider {
   val account = :/("foursquare.com") / "oauth"
   val api = :/("api.foursquare.com") / "v1"
   val contacts = api / "friends"
+  val userInfo = api / "user"
+  
+  override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
+      val feed = h(userInfo <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
+      Identifier.createIfNeeded((feed \ "id"       ).text                                 , IdentifierType.FoursquareId, self, User.currentUser.open_!, account)
+      Identifier.createIfNeeded((feed \ "firstname").text + " " + (feed \ "lastname").text, IdentifierType.FullName    , self, User.currentUser.open_!, account)
+      Identifier.createIfNeeded((feed \ "phone"    ).text                                 , IdentifierType.Phone       , self, User.currentUser.open_!, account)
+      Identifier.createIfNeeded((feed \ "email"    ).text                                 , IdentifierType.Email       , self, User.currentUser.open_!, account)
+      Identifier.createIfNeeded((feed \ "twitter"  ).text                                 , IdentifierType.TwitterId   , self, User.currentUser.open_!, account)
+      Identifier.createIfNeeded((feed \ "facebook" ).text                                 , IdentifierType.FacebookId  , self, User.currentUser.open_!, account)    
+  }
   
   def getContacts() = {
       val authToken = getAccountForUser(User.currentUser.open_!)

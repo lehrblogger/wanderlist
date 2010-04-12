@@ -38,7 +38,7 @@ trait OAuthProvider {
         h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
     }
     
-    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {}
+    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account)
     
     def initializeAccount(accessToken: Token) = {
         val user = User.currentUser.open_!
