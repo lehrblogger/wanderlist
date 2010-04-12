@@ -14,17 +14,31 @@ import Helpers._
 import scala.xml.{NodeSeq, Text} 
  
 class Accounts { 
-    def listAccounts(xhtml: NodeSeq) = { 
-        Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(
-            account => bind("account", xhtml, 
+    private def desc(account: Account, reDraw: () => JsCmd) = 
+        swappable(<span>{account.notes}</span>, <span>{ajaxText(account.notes, v => {account.notes(v).save; reDraw()})}</span>)
+
+    private def doList(reDraw: () => JsCmd)(xhtml: NodeSeq): NodeSeq = {
+        Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(account =>
+            bind("account", xhtml, 
                 "type" -> account.provider,
                 "identifiers" -> IdentifierAccount.findAll(By(IdentifierAccount.account, account)).flatMap(
                     indentifierAccount => bind("ident", chooseTemplate("identifier", "list", xhtml), 
                         "value" -> indentifierAccount.identifier.obj.open_!.value
                     )
                 ),
-                "notes" -> account.notes
+                "notes" -> desc(account, reDraw)
             )
         )
+    }
+
+    def list(xhtml: NodeSeq) = { 
+        val id = S.attr("all_id").open_! 
+
+        def inner(): NodeSeq = { 
+            def reDraw() = SetHtml(id, inner())
+            bind("account", xhtml, "list"    -> doList(reDraw)_ )
+        }
+
+        inner()
     }
 }
