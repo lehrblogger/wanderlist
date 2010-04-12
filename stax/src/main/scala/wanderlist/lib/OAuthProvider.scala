@@ -19,7 +19,7 @@ trait OAuthProvider {
 
     val h = new dispatch.Http
     lazy val consumer = oauth.Consumer(
-       Props.get(provider + "Consumer.key").open_!,
+       Props.get(provider + "Consumer.value").open_!,
        Props.get(provider + "Consumer.secret").open_!)
     lazy val start    = provider + "_start"
     lazy val callback = provider + "_callback"
@@ -27,21 +27,35 @@ trait OAuthProvider {
     def getRequestUrl() = {
         val requestToken = h(account / GetRequestToken << extras <@ consumer as_token)
         TempToken.findAll(By(TempToken.owner, User.currentUser.open_!)).foreach(_.delete_!)
-        TempToken.create.owner(User.currentUser.open_!).key(requestToken.value).secret(requestToken.secret).save
+        TempToken.create.owner(User.currentUser.open_!).value(requestToken.value).secret(requestToken.secret).save
         (account / AuthorizeToken <<? requestToken to_uri).toString
     }
 
-    def exchangeToken(verifier: String) = {
+    def exchangeVerifier(verifier: String) = {
         val tempToken = TempToken.findAll(By(TempToken.owner, User.currentUser.open_!)).head
         TempToken.findAll(By(TempToken.owner, User.currentUser.open_!)).foreach(_.delete_!)
-        val requestToken = new Token(tempToken.key, tempToken.secret)
-        val accessToken = h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
-        Account.create.authenticated(true)
-                        .owner(User.currentUser.open_!)
-                        .accessTokenKey(accessToken.value)
+        val requestToken = new Token(tempToken.value, tempToken.secret)
+        h(account / GetAccessToken <@ (consumer, requestToken, verifier) as_token)
+    }
+    
+    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {}
+    
+    def initializeAccount(accessToken: Token) = {
+        val user = User.currentUser.open_!
+        val selfContact = user.selfContact.obj.openOr {
+            val c = Contact.create.owner(user).saveMe
+            user.selfContact(c).save
+            c
+        }
+        val account = Account.create.owner(User.currentUser.open_!)
+                        .accessTokenValue(accessToken.value)
                         .accessTokenSecret(accessToken.secret)
                         .provider(provider)
+                        .authenticated(true)
+                        .notes("click here to add notes")
                  .saveMe
+        saveIdentifiersForSelf(accessToken, selfContact, account)
+        selfContact.save
     }
 
     def getAccountForUser(user: User) =
@@ -49,6 +63,6 @@ trait OAuthProvider {
 
     def getAccessTokenForUser(user: User) = {
         val token = getAccountForUser(user)
-        Token(token.accessTokenKey, token.accessTokenSecret)
+        Token(token.accessTokenValue, token.accessTokenSecret)
     }
 }

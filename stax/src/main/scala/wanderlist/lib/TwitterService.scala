@@ -20,11 +20,6 @@ object TwitterService extends OAuthProvider {
     val api = :/("api.twitter.com") / "1"
     val contacts = api / "statuses" / "friends.xml"
     
-    // def getInfo() = {
-    //   val accessToken = getAccessTokenForUser(User.currentUser.open_!)
-    //   println(h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken)))
-    // }
-    
     def getContacts() = {
         val authToken = getAccountForUser(User.currentUser.open_!)
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
@@ -38,7 +33,7 @@ object TwitterService extends OAuthProvider {
                 }
             }
         }
-        val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
+        val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
         h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
         //TODO implement paging for Twitter
     }

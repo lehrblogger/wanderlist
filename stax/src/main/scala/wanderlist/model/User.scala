@@ -23,5 +23,5 @@ object User extends User with MetaMegaProtoUser[User] {
 class User extends MegaProtoUser[User] {
   def getSingleton = User // what's the "meta" server
   
-  object self extends MappedLongForeignKey(this, Contact)
+  object selfContact extends MappedLongForeignKey(this, Contact)
 }

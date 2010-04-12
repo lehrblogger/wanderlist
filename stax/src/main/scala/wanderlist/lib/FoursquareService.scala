@@ -41,7 +41,7 @@ object FoursquareService extends OAuthProvider {
               }
           }
       }
-      val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
+      val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
       h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
   }
       

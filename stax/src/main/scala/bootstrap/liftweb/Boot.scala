@@ -49,19 +49,12 @@ class Boot {
             }
             case Req("service" :: oauthService.callback :: Nil, _, _) => {
                 val verifier = S.param(oauthService.VerifierParameter).open_!
-                oauthService.exchangeToken(verifier)
+                val token = oauthService.exchangeVerifier(verifier)
+                oauthService.initializeAccount(token)
                 S.redirectTo("http://" + Props.get("host").open_! + "accounts")
             }
         }
     }
-    
-    // case Req("service" :: GoogleService.callback :: Nil, _, _) => {
-    //     val verifier = java.net.URLDecoder.decode(S.param("oauth_verifier").open_!, "UTF-8")
-    // case Req("service" :: FoursquareService.callback ::  Nil, _, _) => {
-    //     val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
-    // case Req("service" :: TwitterService.callback ::  Nil, _, _) => {
-    //     val token = java.net.URLDecoder.decode(S.param("oauth_token").open_!, "UTF-8")
-        
 
     // Show the spinny image when an Ajax call start
     LiftRules.ajaxStart =

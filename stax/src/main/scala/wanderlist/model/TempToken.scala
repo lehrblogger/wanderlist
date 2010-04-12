@@ -9,7 +9,7 @@ import wanderlist.model._
 class TempToken extends LongKeyedMapper[TempToken] with IdPK { 
     def getSingleton = TempToken 
     object owner extends MappedLongForeignKey(this, User)
-    object key extends MappedString(this, 256)
+    object value extends MappedString(this, 256)
     object secret extends MappedString(this, 256)
 }
 object TempToken extends TempToken with LongKeyedMetaMapper[TempToken]

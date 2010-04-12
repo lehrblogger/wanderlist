@@ -42,7 +42,7 @@ object VimeoService extends OAuthProvider {
         //     </portraits>
         //   </contact>
         // </contacts>
-        val accessToken = Token(authToken.accessTokenKey, authToken.accessTokenSecret)
+        val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
         h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
         //TODO implement paging for Twitter
     }
