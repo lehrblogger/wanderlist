@@ -23,12 +23,12 @@ object FoursquareService extends OAuthProvider {
   
   override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
       val feed = h(userInfo <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
-      Identifier.createIfNeeded((feed \ "id"       ).text                                 , IdentifierType.FoursquareId, self, User.currentUser.open_!, account)
-      Identifier.createIfNeeded((feed \ "firstname").text + " " + (feed \ "lastname").text, IdentifierType.FullName    , self, User.currentUser.open_!, account)
-      Identifier.createIfNeeded((feed \ "phone"    ).text                                 , IdentifierType.Phone       , self, User.currentUser.open_!, account)
-      Identifier.createIfNeeded((feed \ "email"    ).text                                 , IdentifierType.Email       , self, User.currentUser.open_!, account)
-      Identifier.createIfNeeded((feed \ "twitter"  ).text                                 , IdentifierType.TwitterId   , self, User.currentUser.open_!, account)
-      Identifier.createIfNeeded((feed \ "facebook" ).text                                 , IdentifierType.FacebookId  , self, User.currentUser.open_!, account)    
+      Identifier.createIfNeeded((feed \ "id"       ).text                                 , IdentifierType.FoursquareId , self, account)
+      Identifier.createIfNeeded((feed \ "firstname").text + " " + (feed \ "lastname").text, IdentifierType.FullName     , self, account)
+      Identifier.createIfNeeded((feed \ "phone"    ).text                                 , IdentifierType.Phone        , self, account)
+      Identifier.createIfNeeded((feed \ "email"    ).text                                 , IdentifierType.Email        , self, account)
+      Identifier.createIfNeeded((feed \ "twitter"  ).text                                 , IdentifierType.TwitterHandle, self, account)
+      Identifier.createIfNeeded((feed \ "facebook" ).text                                 , IdentifierType.FacebookId   , self, account)    
   }
   
   def getContacts() = {
@@ -36,19 +36,19 @@ object FoursquareService extends OAuthProvider {
       def parseAndStoreContacts(feed: scala.xml.Elem) = {
           for (entry <- (feed \\ "user")) { 
               val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-              Identifier.createIfNeeded((entry \ "id").text                                           , IdentifierType.FoursquareId, newContact, User.currentUser.open_!, authToken)
-              Identifier.createIfNeeded(((entry \ "firstname").text + " " + (entry \ "lastname").text), IdentifierType.FullName,     newContact, User.currentUser.open_!, authToken)
+              Identifier.createIfNeeded((entry \ "id").text                                           , IdentifierType.FoursquareId, newContact, authToken)
+              Identifier.createIfNeeded(((entry \ "firstname").text + " " + (entry \ "lastname").text), IdentifierType.FullName,     newContact, authToken)
               for (email <- (entry \\ "email")) {
-                  Identifier.createIfNeeded(email.text,    IdentifierType.Email        , newContact, User.currentUser.open_!, authToken)
+                  Identifier.createIfNeeded(email.text,    IdentifierType.Email        , newContact, authToken)
               }
               for (phone <- (entry \\ "phone")) {
-                  Identifier.createIfNeeded(phone.text,    IdentifierType.Phone        , newContact, User.currentUser.open_!, authToken)
+                  Identifier.createIfNeeded(phone.text,    IdentifierType.Phone        , newContact, authToken)
               }
               for (twitter <- (entry \\ "twitter")) {
-                  Identifier.createIfNeeded(twitter.text,  IdentifierType.TwitterHandle, newContact, User.currentUser.open_!, authToken)
+                  Identifier.createIfNeeded(twitter.text,  IdentifierType.TwitterHandle, newContact, authToken)
               }
               for (facebook <- (entry \\ "facebook")) {
-                  Identifier.createIfNeeded(facebook.text, IdentifierType.FacebookId   , newContact, User.currentUser.open_!, authToken)
+                  Identifier.createIfNeeded(facebook.text, IdentifierType.FacebookId   , newContact, authToken)
               }
           }
       }

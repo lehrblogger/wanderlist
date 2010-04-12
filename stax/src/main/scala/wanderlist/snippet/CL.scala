@@ -29,8 +29,7 @@ class CL {
             contact => bind("cl", xhtml, 
                 "name"   -> Identifier.findAll(By(Identifier.contact, contact),
                                                By(Identifier.idType, IdentifierType.FullName)).head.value,
-                "identifiers" -> Identifier.findAll(By(Identifier.contact, contact),
-                                               By(Identifier.owner, User.currentUser.open_!)).flatMap(
+                "identifiers" -> Identifier.findAll(By(Identifier.contact, contact)).flatMap(
                     identifier => bind("i", chooseTemplate("identifier", "list", xhtml), 
                         "value" -> identifier.value
                     )

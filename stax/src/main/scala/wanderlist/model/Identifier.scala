@@ -7,26 +7,24 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     def getSingleton = Identifier 
 
     object value extends MappedString(this, 256) 
-    object lastUpdated extends MappedDateTime(this)
+    //object lastUpdated extends MappedDateTime(this)
     object idType extends MappedEnum(this, IdentifierType)
     object contact extends MappedLongForeignKey(this, Contact)
-    object owner extends MappedLongForeignKey(this, User)
 }
 object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
-    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, owner: User, account: Account ): Unit = {
+    def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, account: Account ): Unit = {
         if (value == "") return
-        findAll(By(Identifier.value, value), 
-                By(Identifier.idType, idType), 
-                By(Identifier.contact, contact), 
-                By(Identifier.owner, User)) match {
-            case List(identifier) => {     
-                IdentifierAccount.findAll(By(IdentifierAccount.identifier, this), By(IdentifierAccount.account, account)) match {
+        Identifier.findAll(By(Identifier.value, value), 
+                           By(Identifier.idType, idType), 
+                           By(Identifier.contact, contact)) match {
+            case List(identifier) => {
+                IdentifierAccount.findAll(By(IdentifierAccount.identifier, identifier), By(IdentifierAccount.account, account)) match {
                     case List(identifierAccount) => {/* we have both objects already! */}
-                    case _ => IdentifierAccount.create.identifier(this).account(account).save
+                    case _ => IdentifierAccount.create.identifier(identifier).account(account).save
                 }
             }
             case _ => {
-                val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).owner(owner).saveMe
+                val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).saveMe
                 IdentifierAccount.create.identifier(newIdentifier).account(account).save
             }
         }

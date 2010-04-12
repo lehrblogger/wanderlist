@@ -24,9 +24,9 @@ object TwitterService extends OAuthProvider {
     override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
         val feed = h(userInfo <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
         val user = ((feed \\ "status") \ "user")
-        Identifier.createIfNeeded((user \ "id"         ).text, IdentifierType.TwitterId    , self, User.currentUser.open_!, account)
-        Identifier.createIfNeeded((user \ "screen_name").text, IdentifierType.TwitterHandle, self, User.currentUser.open_!, account)
-        Identifier.createIfNeeded((user \ "name"       ).text, IdentifierType.FullName     , self, User.currentUser.open_!, account) 
+        Identifier.createIfNeeded((user \ "id"         ).text, IdentifierType.TwitterId    , self, account)
+        Identifier.createIfNeeded((user \ "screen_name").text, IdentifierType.TwitterHandle, self, account)
+        Identifier.createIfNeeded((user \ "name"       ).text, IdentifierType.FullName     , self, account) 
     }
     
     def getContacts() = {
@@ -34,11 +34,11 @@ object TwitterService extends OAuthProvider {
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "user")) {
                 val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-                Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, User.currentUser.open_!, authToken)
-                Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, User.currentUser.open_!, authToken)
+                Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)
+                Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, authToken)
                 val name = (entry \ "name").text 
                 if (name != "") {
-                    Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, User.currentUser.open_!, authToken)
+                    Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
                 }
             }
         }

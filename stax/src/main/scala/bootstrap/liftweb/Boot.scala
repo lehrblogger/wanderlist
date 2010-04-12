@@ -33,11 +33,12 @@ class Boot {
     Log.info("Database url: " + DBVendor.dbUrl)
 	
     // Build SiteMap
-    val entries = Menu(Loc("Home"    , List("index")   , "Home"                )) ::
-                  Menu(Loc("Add"     , List("add")     , "Add an Account"      )) ::
-                  Menu(Loc("Accounts", List("accounts"), "Manage your Accounts")) ::
-                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"    )) ::
-                  Menu(Loc("Contacts", List("contacts"), "View your Contacts"  )) ::
+    val IfLoggedIn = If(() => User.currentUser.isDefined, "You must be logged in")
+    val entries = Menu(Loc("Home"    , List("index")   , "Home"                            )) ::
+                  Menu(Loc("Add"     , List("add")     , "Add an Account"      , IfLoggedIn)) ::
+                  Menu(Loc("Accounts", List("accounts"), "Manage your Accounts", IfLoggedIn)) ::
+                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"    , IfLoggedIn)) ::
+                  Menu(Loc("Contacts", List("contacts"), "View your Contacts"  , IfLoggedIn)) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
 

@@ -24,11 +24,11 @@ object VimeoService extends OAuthProvider {
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "user")) {
                 val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-                Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, User.currentUser.open_!, authToken)
-                Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, User.currentUser.open_!, authToken)
+                Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)
+                Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, authToken)
                 val name = (entry \ "name").text 
                 if (name != "") {
-                    Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, User.currentUser.open_!, authToken)
+                    Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
                 }
             }
         }

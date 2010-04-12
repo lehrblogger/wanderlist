@@ -25,9 +25,9 @@ object GoogleService extends OAuthProvider {
 
     override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
         val feed = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
-        Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, User.currentUser.open_!, account)
-        Identifier.createIfNeeded(((feed \ "author") \ "name" ).text, IdentifierType.FullName, self, User.currentUser.open_!, account)
-        Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, User.currentUser.open_!, account)
+        Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, account)
+        Identifier.createIfNeeded(((feed \ "author") \ "name" ).text, IdentifierType.FullName, self, account)
+        Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, account)
     }
     
     def parseDate(dateString: String) = {
@@ -53,13 +53,13 @@ object GoogleService extends OAuthProvider {
         def parseAndStoreContacts(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "entry")) {
                 val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-                Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, User.currentUser.open_!, authToken)
-                Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, User.currentUser.open_!, authToken)
+                Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
+                Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
                 for (email <- (entry \\ "email")) {
-                    Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, User.currentUser.open_!, authToken)
+                    Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
                 }
                 for (phone <- (entry \\ "phoneNumber")) {
-                    Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, User.currentUser.open_!, authToken)
+                    Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
                 }
                 // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
                 //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
