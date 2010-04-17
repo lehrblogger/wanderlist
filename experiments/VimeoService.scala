@@ -6,8 +6,8 @@ import dispatch.oauth._
 import dispatch.oauth.OAuth._
 import wanderlist.model._
 
-object VimeoService extends OAuthProvider {
-    val provider = AuthService.Vimeo
+object VimeoService extends OauthProvider {
+    val service = Service.Vimeo
     
     val GetRequestToken = "request_token"
     val AuthorizeToken  = "authorize"

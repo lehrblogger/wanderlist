@@ -11,7 +11,8 @@ import JsCmds._
 import mapper._ 
 import util._ 
 import Helpers._ 
-import scala.xml.{NodeSeq, Text} 
+import scala.xml.{NodeSeq, Text, UnprefixedAttribute, Null} 
+import dispatch.oauth._
  
 class Accounts { 
     private def desc(account: Account, reDraw: () => JsCmd) = 
@@ -28,19 +29,36 @@ class Accounts {
     }
         
     private def doList(reDraw: () => JsCmd)(xhtml: NodeSeq): NodeSeq = {
-        Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(account =>
+        Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(account => {
+            val uniqueId = Helpers.nextFuncName
             bind("account", xhtml, 
-                "type" -> account.provider,
+                "type" -> account.service,
                 "identifiers" -> identifiersToShow(account).flatMap(identifier => 
                     bind("ident", chooseTemplate("identifier", "list", xhtml),
                         "type"  -> identifier.idType,
                         "value" -> identifier.value
                     )
                 ),
-                "notes" -> desc(account, reDraw)
+                "notes" -> desc(account, reDraw),
+                "fetch" -> <span id={uniqueId}>{
+                        ajaxButton("fetch contacts", () => {
+                                (account.service match {
+                                    case Service.Foursquare => FoursquareService
+                                    case Service.Google     => GoogleService
+                                    case Service.Twitter    => TwitterService
+                                }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret))
+                        
+                                SetHtml(uniqueId, 
+                                    <lift:comet type="ContactFetcher">
+        					            Status: <accountStatus:count>Missing Status</accountStatus:count> 
+        				            </lift:comet>
+        				        )
+        				})
+    				}</span>
             )
-        )
+        })
     }
+    
 
     def list(xhtml: NodeSeq) = { 
         val id = S.attr("all_id").open_! 

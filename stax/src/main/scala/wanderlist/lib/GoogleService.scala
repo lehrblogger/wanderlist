@@ -8,11 +8,12 @@ import wanderlist.model._
 import java.util.Date
 import java.text.SimpleDateFormat
 
-object GoogleService extends OAuthProvider {
-    val provider = AuthService.Google
+object GoogleService extends OauthProvider with ContactSource  {
+    val service = Service.Google
 
     val api = :/("www.google.com").secure / "m8" / "feeds"
     val contacts = api / "contacts"
+    val user = contacts
     val groups = api / "groups"
     
     val GetRequestToken = "OAuthGetRequestToken"
@@ -23,8 +24,8 @@ object GoogleService extends OAuthProvider {
     val extras = Map("scope" -> api.to_uri.toString, "oauth_callback" -> (:/(Props.get("host").open_!) / "service" / callback).to_uri.toString)
     val account = :/("www.google.com").secure / "accounts" 
 
-    override def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
-        val feed = h(contacts / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
+    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
+        val feed = h(user / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
         Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, account)
         Identifier.createIfNeeded(((feed \ "author") \ "name" ).text, IdentifierType.FullName, self, account)
         Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, account)
@@ -41,34 +42,34 @@ object GoogleService extends OAuthProvider {
               val name = (entry \ "title").text
               val lastUpdated = parseDate((entry \ "updated").text)
               val googleId = (entry \ "id").text
-              //TODO .account(provider) needs to be here and add the current account to the group
+              //TODO .account(service) needs to be here and add the current account to the group
               Group.create.owner(User.currentUser.open_!).name(name).groupId(googleId).lastUpdated(lastUpdated).save
           }
       val accessToken = getAccessTokenForUser(User.currentUser.open_!)
       h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
 
-    def getContacts() = {
-        val authToken = getAccountForUser(User.currentUser.open_!)
-        def parseAndStoreContacts(feed: scala.xml.Elem) = {
-            for (entry <- (feed \\ "entry")) {
-                val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-                Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
-                Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
-                for (email <- (entry \\ "email")) {
-                    Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
-                }
-                for (phone <- (entry \\ "phoneNumber")) {
-                    Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
-                }
-                // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
-                //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
-                //                               By(Group.service, provider                      )).head
-                //     ContactGroup.join(newContact, group)
-                // }
-            }
-        }
-        val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
-        h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
-    }
+    // override def getContacts() = {
+    //     val authToken = getAccountForUser(User.currentUser.open_!)
+    //     def parseAndStoreContacts(feed: scala.xml.Elem) = {
+    //         for (entry <- (feed \\ "entry")) {
+    //             val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
+    //             Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
+    //             Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
+    //             for (email <- (entry \\ "email")) {
+    //                 Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
+    //             }
+    //             for (phone <- (entry \\ "phoneNumber")) {
+    //                 Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
+    //             }
+    //             // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
+    //             //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
+    //             //                               By(Group.service, service                      )).head
+    //             //     ContactGroup.join(newContact, group)
+    //             // }
+    //         }
+    //     }
+    //     val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
+    //     h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
+    // }
 }
