@@ -40,19 +40,18 @@ class Accounts {
                     )
                 ),
                 "notes" -> desc(account, reDraw),
-                "fetch" -> <span id={uniqueId}>{
+                "status" -> <span id={uniqueId}>{
                         ajaxButton("fetch contacts", () => {
-                                (account.service match {
-                                    case Service.Foursquare => FoursquareService
-                                    case Service.Google     => GoogleService
-                                    case Service.Twitter    => TwitterService
-                                }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret))
-                        
-                                SetHtml(uniqueId, 
-                                    <lift:comet type="ContactFetcher">
-        					            Status: <accountStatus:count>Missing Status</accountStatus:count> 
-        				            </lift:comet>
-        				        )
+                            (account.service match {
+                                case Service.Foursquare => FoursquareService
+                                case Service.Google     => GoogleService
+                                case Service.Twitter    => TwitterService
+                            }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret), uniqueId ) 
+                            SetHtml(uniqueId, 
+                                <lift:comet type="ContactCounter">
+    					            Status: <fetchStatus:status>Missing Fetch Status</fetchStatus:status> 
+    				            </lift:comet>
+    				        )
         				})
     				}</span>
             )
