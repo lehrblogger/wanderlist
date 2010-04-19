@@ -23,14 +23,15 @@ class Accounts {
         Identifier.findAll(By(Identifier.contact, selfContact)).filter(identifier => {
             IdentifierAccount.findAll(By(IdentifierAccount.identifier, identifier), By(IdentifierAccount.account, account)) match {
                 case List(identifierAccount) => true
-                case _      => false
+                case _                       => false
             }
         })
     }
         
     private def doList(reDraw: () => JsCmd)(xhtml: NodeSeq): NodeSeq = {
         Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(account => {
-            val uniqueId = Helpers.nextFuncName
+            val buttonSpanId = Helpers.nextFuncName
+            val contactCounterName = Helpers.nextFuncName
             bind("account", xhtml, 
                 "type" -> account.service,
                 "identifiers" -> identifiersToShow(account).flatMap(identifier => 
@@ -40,24 +41,22 @@ class Accounts {
                     )
                 ),
                 "notes" -> desc(account, reDraw),
-                "status" -> <span id={uniqueId}>{
+                "fetch" -> <span id={buttonSpanId}>{
                         ajaxButton("fetch contacts", () => {
                             (account.service match {
                                 case Service.Foursquare => FoursquareService
                                 case Service.Google     => GoogleService
                                 case Service.Twitter    => TwitterService
-                            }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret), uniqueId ) 
-                            SetHtml(uniqueId, 
-                                <lift:comet type="ContactCounter">
-    					            Status: <fetchStatus:status>Missing Fetch Status</fetchStatus:status> 
-    				            </lift:comet>
-    				        )
+                            }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret), contactCounterName) 
+                            SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
         				})
-    				}</span>
+    				}</span>,
+    			"status" -> <lift:comet type="ContactCounter" name={contactCounterName}>
+                                <fetchStatus:status>Missing Fetch Status</fetchStatus:status> 
+                            </lift:comet>
             )
         })
     }
-    
 
     def list(xhtml: NodeSeq) = { 
         val id = S.attr("all_id").open_! 

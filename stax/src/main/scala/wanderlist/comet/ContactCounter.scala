@@ -7,6 +7,7 @@ import actor._
 import util._
 import Helpers._
 import _root_.scala.xml._
+import _root_.scala.collection.mutable._
 import _root_.java.util.Date
 import S._
 import SHtml._
@@ -17,53 +18,47 @@ import net.liftweb.http.js.jquery.JqJsCmds.{AppendHtml}
 import wanderlist.model._
 import wanderlist.lib._
 
-class ContactCounter extends CometActor {
+class ContactCounter extends CometActor { //with CometListener { 
     override def defaultPrefix = Full("fetchStatus")
 
     def render = bind("status" -> statusSpan)
+    def statusSpan = (<span id={name.open_!}>click to get your contacts for this account</span>)
     
-    val counterSpanId = Helpers.nextFuncName
-    var count = 0
-    def statusSpan = (<span id={counterSpanId}>{count} contacts fetched</span>)
-    // def completeSpan = (<span id="{counterSpanId}"></span>)
-    // def errorSpan    = (<span id="{counterSpanId}">E</span>)
-
-    override def lowPriority : PartialFunction[Any, Unit] = {
-        case c: Int => {
-            count = c
-            println("Got count " + count + " and id = " + counterSpanId)
-            partialUpdate(SetHtml(counterSpanId, Text(count.toString))) 
+    override def lowPriority: PartialFunction[Any, Unit] = {
+        case newText:String => {
+            println("Got CounterUpdate " + name.open_! + "," + newText)
+            partialUpdate(SetHtml(name.open_!, Text(newText)))
         }
-        case FetchComplete => {
-            println("Done and id = " + counterSpanId)
-            println()
-            partialUpdate(SetHtml(counterSpanId, "All contacts fetched")) 
-        }
-        case FetchError => {
-            println("Error and id = " + counterSpanId)
-            partialUpdate(SetHtml(counterSpanId, "Error fetching Contacts")) 
-        }
+        
+    }
+    //def registerWith = CounterMaster
+    
+    override def localSetup = {
+        CounterMaster ! SubscribeCounter(name.open_!, this)
+        super.localSetup()
+    }
+    override def localShutdown = {
+        CounterMaster ! UnsubscribeCounter(name.open_!)
+        super.localShutdown()
     }
 }
-case object FetchComplete
-case object FetchError
-
-
-class Clock extends CometActor { 
-    override def defaultPrefix = Full("clk")
-
-    def render = bind("time" -> timeSpan)
+ 
+object CounterMaster extends LiftActor with ListenerManager { 
+    private var counters = new HashMap[String, ContactCounter]
     
-    def timeSpan = (<span id="time">{timeNow}</span>)
-    
-    ActorPing.schedule(this, Tick, 10000L)
-
-    override def lowPriority : PartialFunction[Any, Unit] = {
-        case Tick => {
-            println("Got tick " + new Date()); 
-            partialUpdate(SetHtml("time", Text(timeNow.toString))) 
-            ActorPing.schedule(this, Tick, 10000L)
+    override def mediumPriority: PartialFunction[Any, Unit]  = {
+        case SubscribeCounter(name, counter) => counters.put(name, counter)
+        case UnsubscribeCounter(name)        => counters -= name
+    }
+    override def lowPriority: PartialFunction[Any, Unit]     = { 
+        case CounterUpdate(name, newText)    => counters.get(name) match {
+            case None => println("That ContactCounter is gone!")
+            case Some(x) => x ! newText
         }
     }
+    
+    def createUpdate = {}
 }
-case object Tick
+case class CounterUpdate(name: String, newText: String)
+case class UnsubscribeCounter(name:String)
+case class SubscribeCounter(name: String, counter: ContactCounter)
