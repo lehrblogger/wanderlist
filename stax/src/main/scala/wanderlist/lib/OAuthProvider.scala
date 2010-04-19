@@ -9,7 +9,11 @@ import wanderlist.model._
 
 trait OauthProvider {
     val service: Service.Value
-    
+    val h = new dispatch.Http
+    lazy val consumer = oauth.Consumer(
+       Props.get(service + "Consumer.value").open_!,
+       Props.get(service + "Consumer.secret").open_!)
+       
     val GetRequestToken: String
     val AuthorizeToken: String
     val GetAccessToken: String
@@ -19,10 +23,6 @@ trait OauthProvider {
     val api: dispatch.Request
     val user: dispatch.Request
 
-    val h = new dispatch.Http
-    lazy val consumer = oauth.Consumer(
-       Props.get(service + "Consumer.value").open_!,
-       Props.get(service + "Consumer.secret").open_!)
     lazy val start    = service + "_start"
     lazy val callback = service + "_callback"
     

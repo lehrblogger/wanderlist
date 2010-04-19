@@ -29,22 +29,33 @@ object TwitterService extends OauthProvider with ContactSource  {
         Identifier.createIfNeeded((userXml \ "screen_name").text, IdentifierType.TwitterHandle, self, account)
         Identifier.createIfNeeded((userXml \ "name"       ).text, IdentifierType.FullName     , self, account) 
     }
-    // 
-    // override def getContacts() = {
-    //     val authToken = getAccountForUser(User.currentUser.open_!)
-    //     def parseAndStoreContacts(feed: scala.xml.Elem) = {
-    //         for (entry <- (feed \\ "user")) {
-    //             val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-    //             Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)
-    //             Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, authToken)
-    //             val name = (entry \ "name").text 
-    //             if (name != "") {
-    //                 Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
-    //             }
-    //         }
-    //     }
-    //     val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
-    //     h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
-    //     //TODO implement paging for Twitter
-    // }
+
+    def parseAndStoreContacts(feed: scala.xml.Elem) = {
+        println("Twitter parseAndStoreContacts")
+        // for (entry <- (feed \\ "user")) {
+        //     println(entry)
+        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
+        //     Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)
+        //     Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, authToken)
+        //     val name = (entry \ "name").text 
+        //     if (name != "") {
+        //         Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
+        //     }
+        // }
+        updateSpanText("All done! " + 10000000 + " contacts fetched.")
+    }
+    
+    def parseAndStoreGroups(feed: scala.xml.Elem) = {
+        println("Twitter parseAndStoreGroups")
+    }
+    //TODO implement paging for Twitter
+    
+    def getContacts(accessToken: Token) = {
+        h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
+    }
+    
+    def getGroups(accessToken: Token) = {
+        h(groups <@ (consumer, accessToken) <> parseAndStoreGroups)
+    }
+    
 }

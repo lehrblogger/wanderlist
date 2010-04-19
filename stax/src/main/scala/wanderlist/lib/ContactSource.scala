@@ -19,29 +19,32 @@ trait ContactSource { // with Actor?
     val service: Service.Value
     val contacts: dispatch.Request
     val groups: dispatch.Request
+    
+    var contactCounterName: String = ""
      
-    def getContacts(accessToken: Token, contactCounterName: String) = { 
-        // val authToken = getAccountForUser(User.currentUser.open_!)
-        // val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
-        // h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
-        
-        (new ContactFetcher(accessToken, contactCounterName)) ! FetchStart
+    def getAccountData(accessToken: Token, name: String) = { 
+        contactCounterName = name
+        (new ContactFetcher(accessToken)) ! FetchStart
     }
-    //def parseAndStoreContacts()
-}
-
-class ContactFetcher(accessToken: Token, contactCounterName: String) extends LiftActor {
-    protected def messageHandler = {
-        case FetchStart => {
-            def updateSpanText(newText: String) = CounterMaster ! CounterUpdate(contactCounterName, newText)
-            var count = 0
-            for (i <- 0.until(10)) { 
-                count = i
-                Thread.sleep(5000)
-                updateSpanText(count.toString + " contacts fetched...")
+    
+    def updateSpanText(newText: String) = {
+        CounterMaster ! CounterUpdate(contactCounterName, newText)
+    }
+    
+    def getGroups(accessToken: Token)
+    def parseAndStoreGroups(feed: scala.xml.Elem)
+    
+    def getContacts(accessToken: Token)
+    def parseAndStoreContacts(feed: scala.xml.Elem)
+    
+    class ContactFetcher(accessToken: Token) extends LiftActor {
+        protected def messageHandler = {
+            case FetchStart => {
+                //getGroups(accessToken)
+                getContacts(accessToken)
             }
-            updateSpanText("All done! " + count + " contacts fetched.")
         }
     }
+    case object FetchStart
 }
-case object FetchStart
+

@@ -31,26 +31,39 @@ object FoursquareService extends OauthProvider with ContactSource {
         Identifier.createIfNeeded((feed \ "facebook" ).text                                 , IdentifierType.FacebookId   , self, account)    
     }
     
-    // def parseAndStoreContacts(feed: scala.xml.Elem) = {
-    //     for (entry <- (feed \\ "user")) { 
-    //         val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-    //         Identifier.createIfNeeded((entry \ "id").text                                           , IdentifierType.FoursquareId, newContact, authToken)
-    //         Identifier.createIfNeeded(((entry \ "firstname").text + " " + (entry \ "lastname").text), IdentifierType.FullName,     newContact, authToken)
-    //         for (email <- (entry \\ "email")) {
-    //             Identifier.createIfNeeded(email.text,    IdentifierType.Email        , newContact, authToken)
-    //         }
-    //         for (phone <- (entry \\ "phone")) {
-    //             Identifier.createIfNeeded(phone.text,    IdentifierType.Phone        , newContact, authToken)
-    //         }
-    //         for (twitter <- (entry \\ "twitter")) {
-    //             Identifier.createIfNeeded(twitter.text,  IdentifierType.TwitterHandle, newContact, authToken)
-    //         }
-    //         for (facebook <- (entry \\ "facebook")) {
-    //             Identifier.createIfNeeded(facebook.text, IdentifierType.FacebookId   , newContact, authToken)
-    //         }
-    //     }
-    // }
+    def parseAndStoreContacts(feed: scala.xml.Elem) = {
+        println("Foursquare parseAndStoreContacts")
+        // for (entry <- (feed \\ "user")) { 
+        //     println(entry)
+        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
+        //                 Identifier.createIfNeeded((entry \ "id").text                                           , IdentifierType.FoursquareId, newContact, authToken)
+        //                 Identifier.createIfNeeded(((entry \ "firstname").text + " " + (entry \ "lastname").text), IdentifierType.FullName,     newContact, authToken)
+        //                 for (email <- (entry \\ "email")) {
+        //                     Identifier.createIfNeeded(email.text,    IdentifierType.Email        , newContact, authToken)
+        //                 }
+        //                 for (phone <- (entry \\ "phone")) {
+        //                     Identifier.createIfNeeded(phone.text,    IdentifierType.Phone        , newContact, authToken)
+        //                 }
+        //                 for (twitter <- (entry \\ "twitter")) {
+        //                     Identifier.createIfNeeded(twitter.text,  IdentifierType.TwitterHandle, newContact, authToken)
+        //                 }
+        //                 for (facebook <- (entry \\ "facebook")) {
+        //                     Identifier.createIfNeeded(facebook.text, IdentifierType.FacebookId   , newContact, authToken)
+        //                 }
+        // }
+        //updateSpanText("All done! " + count + " contacts fetched.")
+    } 
     
-      
+    def parseAndStoreGroups(feed: scala.xml.Elem) = {
+        println("Foursquare parseAndStoreGroups")
+    }
+    
+    def getContacts(accessToken: Token) = {
+        h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
+    }
+    
+    def getGroups(accessToken: Token) = {
+        h(groups <@ (consumer, accessToken) <> parseAndStoreGroups)
+    }
 }
 

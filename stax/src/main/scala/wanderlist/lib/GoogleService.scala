@@ -12,9 +12,9 @@ object GoogleService extends OauthProvider with ContactSource  {
     val service = Service.Google
 
     val api = :/("www.google.com").secure / "m8" / "feeds"
-    val contacts = api / "contacts"
-    val user = contacts
+    val user = api / "contacts"
     val groups = api / "groups"
+    val contacts = user
     
     val GetRequestToken = "OAuthGetRequestToken"
     val AuthorizeToken  = "OAuthAuthorizeToken"
@@ -36,40 +36,44 @@ object GoogleService extends OauthProvider with ContactSource  {
         parser.parse(dateString)
     }
     
-    def getGroups() = {
-      def parseAndStoreGroups(feed: scala.xml.Elem) =
-          for (entry <- (feed \\ "entry")) {
-              val name = (entry \ "title").text
-              val lastUpdated = parseDate((entry \ "updated").text)
-              val googleId = (entry \ "id").text
-              //TODO .account(service) needs to be here and add the current account to the group
-              Group.create.owner(User.currentUser.open_!).name(name).groupId(googleId).lastUpdated(lastUpdated).save
-          }
-      val accessToken = getAccessTokenForUser(User.currentUser.open_!)
-      h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
+    def parseAndStoreContacts(feed: scala.xml.Elem) = {
+        println("Google parseAndStoreContacts")
+        // for (entry <- (feed \\ "entry")) {
+        //     println(entry)
+        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
+        //     Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
+        //     Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
+        //     for (email <- (entry \\ "email")) {
+        //         Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
+        //     }
+        //     for (phone <- (entry \\ "phoneNumber")) {
+        //         Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
+        //     }
+        //     // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
+        //     //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
+        //     //                               By(Group.service, service                      )).head
+        //     //     ContactGroup.join(newContact, group)
+        //     // }
+        // }
+    }
+    
+    def parseAndStoreGroups(feed: scala.xml.Elem) = {
+        println("Google parseAndStoreGroups")
+        // for (entry <- (feed \\ "entry")) {
+        //     val name = (entry \ "title").text
+        //     val lastUpdated = parseDate((entry \ "updated").text)
+        //     val googleId = (entry \ "id").text
+        //     //TODO .account(service) needs to be here and add the current account to the group
+        //     Group.create.owner(User.currentUser.open_!).name(name).groupId(googleId).lastUpdated(lastUpdated).save
+        // }
+    }
+    
+    def getContacts(accessToken: Token) = {
+        h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
+    }
+    
+    def getGroups(accessToken: Token) = {
+        h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreGroups)
     }
 
-    // override def getContacts() = {
-    //     val authToken = getAccountForUser(User.currentUser.open_!)
-    //     def parseAndStoreContacts(feed: scala.xml.Elem) = {
-    //         for (entry <- (feed \\ "entry")) {
-    //             val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-    //             Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
-    //             Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
-    //             for (email <- (entry \\ "email")) {
-    //                 Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
-    //             }
-    //             for (phone <- (entry \\ "phoneNumber")) {
-    //                 Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
-    //             }
-    //             // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
-    //             //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
-    //             //                               By(Group.service, service                      )).head
-    //             //     ContactGroup.join(newContact, group)
-    //             // }
-    //         }
-    //     }
-    //     val accessToken = Token(authToken.accessTokenValue, authToken.accessTokenSecret)
-    //     h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, accessToken) <> parseAndStoreContacts)
-    // }
 }

@@ -41,13 +41,13 @@ class Accounts {
                     )
                 ),
                 "notes" -> desc(account, reDraw),
-                "fetch" -> <span id={buttonSpanId}>{
+                "fetch" -> <span id={buttonSpanId}>{ //in the future this will have to check current account status, but that'll be easy
                         ajaxButton("fetch contacts", () => {
                             (account.service match {
                                 case Service.Foursquare => FoursquareService
                                 case Service.Google     => GoogleService
                                 case Service.Twitter    => TwitterService
-                            }).getContacts(Token(account.accessTokenValue, account.accessTokenSecret), contactCounterName) 
+                            }).getAccountData(Token(account.accessTokenValue, account.accessTokenSecret), contactCounterName) 
                             SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
         				})
     				}</span>,
