@@ -36,7 +36,7 @@ trait ContactSource { // with Actor?
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem)
     
     def getContacts(account: Account)
-    def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem)
+    def parseAndStoreContacts(account: Account, additionalGroups: List[Group])(feed: scala.xml.Elem)
     
     class ContactFetcher(account: Account) extends LiftActor {
         protected def messageHandler = {

@@ -60,6 +60,7 @@ class Accounts {
         				}
     				},
 			    "status" -> {
+			            // println("re-binding the status with name = " + contactCounterName + " and count = " + account.contacts.length)
                         if (count == 0) {
                             <lift:comet type="ContactCounter" name={contactCounterName}>
         			                <span id={contactCounterName}>click to get your contacts for this account</span>

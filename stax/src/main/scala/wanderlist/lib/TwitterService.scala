@@ -18,53 +18,62 @@ object TwitterService extends OauthProvider with ContactSource  {
     val account = :/("twitter.com") / "oauth"
     
     val api = :/("api.twitter.com") / "1"
-    val contacts = api / "statuses" / "friends.xml"
+    val contacts = api / "statuses"
     val groups = api / ""
     val user = api / "statuses" / "user_timeline.xml"
-    
-    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
-        val feed = h(user <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
-        val userXml = ((feed \\ "status") \ "user")
-        Identifier.createIfNeeded((userXml \ "id"         ).text, IdentifierType.TwitterId    , self, account)
-        Identifier.createIfNeeded((userXml \ "screen_name").text, IdentifierType.TwitterHandle, self, account)
-        Identifier.createIfNeeded((userXml \ "name"       ).text, IdentifierType.FullName     , self, account) 
+
+    def createIdentifiersForElemContactAccount(elem: scala.xml.Node, contact: Contact, account: Account) = {
+        Identifier.createIfNeeded((elem \ "id"         ).text, IdentifierType.TwitterId    , contact, account)
+        Identifier.createIfNeeded((elem \ "screen_name").text, IdentifierType.TwitterHandle, contact, account)
+        Identifier.createIfNeeded((elem \ "name"       ).text, IdentifierType.FullName     , contact, account)
     }
 
-    def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem) = {
-        println("Twitter parseAndStoreContacts")
-        // for (entry <- (feed \\ "user")) {
-        //     println(entry)
-        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-        //     Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)
-        //     Identifier.createIfNeeded((entry \ "screen_name").text, IdentifierType.TwitterHandle, newContact, authToken)
-        //     val name = (entry \ "name").text 
-        //     if (name != "") {
-        //         Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
-        //     }
-        // }
-        
+    def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
+        val feed = h(user <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
+        createIdentifiersForElemContactAccount(((feed \\ "status") \ "user").theSeq.first, self, account)
+    }
+
+
+    def parseAndStoreContacts(account: Account, additionalGroups: List[Group])(feed: scala.xml.Elem) = {
+        var count = account.contacts.length
+        for (entry <- (feed \\ "user")) {
+            println(entry)
+            val newContact = Contact.create.owner(account.owner).saveMe
+            createIdentifiersForElemContactAccount(entry, newContact, account)
+            for (group <- additionalGroups) {
+                ContactGroup.join(newContact, group)
+            }
+            count += 1
             updateSpanText(count + " contacts fetched...")
         }
-        updateSpanText("All done! " + count + " contacts fetched.")
+    }
+    def getContacts(account: Account) = {    //TODO implement paging for Twitter
+        val following = Group.findAll(By(Group.groupId    , "following"  ),
+                                      By(Group.owner      , account.owner),
+                                      By(Group.account    , account      ),
+                                      By(Group.userCreated, false        )).head
+        println(following)
+        h(contacts / "friends.xml"   <@ (consumer, account.token) <> parseAndStoreContacts(account, List(following)))
+        updateSpanText("Got the people you're following! " + account.contacts.length + " contacts fetched.")
+        
+        val followers = Group.findAll(By(Group.groupId    , "followers"  ),
+                                      By(Group.owner      , account.owner),
+                                      By(Group.account    , account      ),
+                                      By(Group.userCreated, false        )).head
+        println(followers)
+        h(contacts / "followers.xml" <@ (consumer, account.token) <> parseAndStoreContacts(account, List(followers)))
+        updateSpanText("Got your followers too! " + account.contacts.length + " contacts fetched.")
     }
     
-    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
-        println("Twitter parseAndStoreGroups")
-    }
-    //TODO implement paging for Twitter
-    
-    def getContacts(account: Account) = {
-        h(contacts <@ (consumer, account.token) <> parseAndStoreContacts(account))
-    }
-    
+    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {}
     def getGroups(account: Account) = {
         val twitterGroups = List("following", "followers")
         for (twitterGroup <- twitterGroups) {
             Group.create.name(twitterGroup)
                         .groupId(twitterGroup)
-                        .owner(User.currentUser.open_!)
+                        .owner(account.owner)
                         .account(account)
-                        .userCreated(false)
+                        .userCreated(false).save
         }
         //TODO get lists here! but you can have people on Lists you aren't friends with. ugh.
     }
