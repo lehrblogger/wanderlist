@@ -13,7 +13,7 @@ class Group extends LongKeyedMapper[Group] with IdPK {
     object owner extends MappedLongForeignKey(this, User)
     object account extends MappedLongForeignKey(this, Account)
     object userCreated extends MappedBoolean(this)
-    //object lastUpdated extends MappedDateTime(this)
-    object contacts extends HasManyThrough(this, Contact, ContactGroup, ContactGroup.group, ContactGroup.contact) 
 }
-object Group extends Group with LongKeyedMetaMapper[Group]
+object Group extends Group with LongKeyedMetaMapper[Group] {
+    def contacts = ContactGroup.findAll(By(ContactGroup.group, this.id)).map(_.contact.obj.open_!)
+}

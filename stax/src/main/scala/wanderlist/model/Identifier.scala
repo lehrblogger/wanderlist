@@ -12,6 +12,8 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     object contact extends MappedLongForeignKey(this, Contact)
 }
 object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
+    def accounts = IdentifierAccount.findAll(By(IdentifierAccount.identifier, this.id)).map(_.account.obj.open_!)
+
     def createIfNeeded(value: String, idType: IdentifierType.Value, contact: Contact, account: Account ): Unit = {
         if (value == "") return
         Identifier.findAll(By(Identifier.value, value), 

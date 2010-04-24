@@ -1,6 +1,8 @@
 package wanderlist.model 
 import _root_.net.liftweb.mapper._ 
 import dispatch.oauth._
+import scala.collection.mutable.HashSet
+
 
 class Account extends LongKeyedMapper[Account] with IdPK {
     def getSingleton = Account
@@ -13,6 +15,16 @@ class Account extends LongKeyedMapper[Account] with IdPK {
     
     def token = Token(accessTokenValue, accessTokenSecret)
     
+    def identifiers = IdentifierAccount.findAll(By(IdentifierAccount.account, this.id)).map(_.identifier.obj.open_!)
+    
+    def contacts = { 
+        val contactSet = new HashSet[Contact]
+        for (identifier <- this.identifiers) {
+            val contact = identifier.contact.obj.open_!
+            if (contact != owner.obj.open_!.selfContact.obj.open_!) { contactSet += contact }
+        }
+        contactSet.toList
+    }
 }
 object Account extends Account with LongKeyedMetaMapper[Account]
 

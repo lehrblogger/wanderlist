@@ -9,6 +9,7 @@ import wanderlist.model._
 class Contact extends LongKeyedMapper[Contact] with IdPK { 
     def getSingleton = Contact 
     object owner extends MappedLongForeignKey(this, User)
-    object groups extends HasManyThrough(this, Group, ContactGroup, ContactGroup.contact, ContactGroup.group)
 }
-object Contact extends Contact with LongKeyedMetaMapper[Contact] {}
+object Contact extends Contact with LongKeyedMetaMapper[Contact] {
+    def groups = ContactGroup.findAll(By(ContactGroup.contact, this.id)).map(_.group.obj.open_!)
+}

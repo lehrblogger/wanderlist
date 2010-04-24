@@ -28,6 +28,7 @@ trait ContactSource { // with Actor?
     }
     
     def updateSpanText(newText: String) = {
+        println("updateSpanText!")
         CounterMaster ! CounterUpdate(contactCounterName, newText)
     }
     

@@ -2,6 +2,7 @@ package wanderlist.snippet
 import wanderlist._
 import wanderlist.model._ 
 import wanderlist.lib._
+import wanderlist.comet._
 import net.liftweb._ 
 import http._ 
 import SHtml._ 
@@ -31,7 +32,8 @@ class Accounts {
     private def doList(reDraw: () => JsCmd)(xhtml: NodeSeq): NodeSeq = {
         Account.findAll(By(Account.owner, User.currentUser.open_!)).flatMap(account => {
             val buttonSpanId = Helpers.nextFuncName
-            val contactCounterName = Helpers.nextFuncName
+            val contactCounterName = "account_comet_" + account.id
+            val count = account.contacts.length
             bind("account", xhtml, 
                 "type" -> account.service,
                 "identifiers" -> identifiersToShow(account).flatMap(identifier => 
@@ -41,23 +43,37 @@ class Accounts {
                     )
                 ),
                 "notes" -> desc(account, reDraw),
-                "fetch" -> <span id={buttonSpanId}>{ //in the future this will have to check current account status, but that'll be easy
-                        ajaxButton("fetch contacts", () => {
-                            (account.service match {
-                                case Service.Foursquare => FoursquareService
-                                case Service.Google     => GoogleService
-                                case Service.Twitter    => TwitterService
-                            }).getAccountData(account, contactCounterName) 
-                            SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
-        				})
-    				}</span>,
-    			"status" -> <lift:comet type="ContactCounter" name={contactCounterName}>
-                                <fetchStatus:status>Missing Fetch Status</fetchStatus:status> 
+                "fetch" -> {
+                        if (count == 0) {
+                            <span id={buttonSpanId}>{
+                                ajaxButton("fetch contacts", () => {
+                                    (account.service match {
+                                        case Service.Foursquare => FoursquareService
+                                        case Service.Google     => GoogleService
+                                        case Service.Twitter    => TwitterService
+                                    }).getAccountData(account, contactCounterName) 
+                                    SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
+                				})
+        				    }</span> 
+        				} else {
+                            <span id={buttonSpanId}></span>
+        				}
+    				},
+			    "status" -> {
+                        if (count == 0) {
+                            <lift:comet type="ContactCounter" name={contactCounterName}>
+        			                <span id={contactCounterName}>click to get your contacts for this account</span>
                             </lift:comet>
+        				} else {
+                            <lift:comet type="ContactCounter" name={contactCounterName}>
+        			                <span id={contactCounterName}>{count} contacts fetched.</span> //TODO fix this since it's still a little buggy, but good enough
+                            </lift:comet>
+        				}
+        			}
             )
         })
     }
-
+    
     def list(xhtml: NodeSeq) = { 
         val id = S.attr("all_id").open_! 
 

@@ -21,8 +21,8 @@ import wanderlist.lib._
 class ContactCounter extends CometActor { //with CometListener { 
     override def defaultPrefix = Full("fetchStatus")
 
-    def render = bind("status" -> statusSpan)
-    def statusSpan = (<span id={name.open_!}>click to get your contacts for this account</span>)
+    def render = bind()//"status" -> statusSpan)
+    //def statusSpan = (<span id={name.open_!}></span>)
     
     override def lowPriority: PartialFunction[Any, Unit] = {
         case newText:String => {
