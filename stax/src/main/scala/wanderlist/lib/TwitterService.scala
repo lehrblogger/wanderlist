@@ -42,7 +42,10 @@ object TwitterService extends OauthProvider with ContactSource  {
         //         Identifier.createIfNeeded(name                    , IdentifierType.FullName     , newContact, authToken)
         //     }
         // }
-        updateSpanText("All done! " + 10000000 + " contacts fetched.")
+        
+            updateSpanText(count + " contacts fetched...")
+        }
+        updateSpanText("All done! " + count + " contacts fetched.")
     }
     
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
@@ -63,6 +66,6 @@ object TwitterService extends OauthProvider with ContactSource  {
                         .account(account)
                         .userCreated(false)
         }
-        //TODO get lists here!        
+        //TODO get lists here! but you can have people on Lists you aren't friends with. ugh.
     }
 }

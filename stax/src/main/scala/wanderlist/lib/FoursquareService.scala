@@ -16,7 +16,6 @@ import mapper._
 import util._ 
 import Helpers._ 
 
-
 object FoursquareService extends OauthProvider with ContactSource {
     val service = Service.Foursquare
     

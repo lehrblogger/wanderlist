@@ -37,41 +37,42 @@ object GoogleService extends OauthProvider with ContactSource  {
     }
     
     def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem) = {
-        println("Google parseAndStoreContacts")
-        // for (entry <- (feed \\ "entry")) {
-        //     println(entry)
-        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-        //     Identifier.createIfNeeded((entry \ "id"   ).text, IdentifierType.GoogleId, newContact, authToken)
-        //     Identifier.createIfNeeded((entry \ "title").text, IdentifierType.FullName, newContact, authToken)
-        //     for (email <- (entry \\ "email")) {
-        //         Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email, newContact, authToken)
-        //     }
-        //     for (phone <- (entry \\ "phoneNumber")) {
-        //         Identifier.createIfNeeded(phone.text, IdentifierType.Phone, newContact, authToken)
-        //     }
-        //     // for (googleGroup <- (entry \\ "groupMembershipInfo")) {
-        //     //     val group = Group.findAll(By(Group.id, (googleGroup \ "@href").toString),
-        //     //                               By(Group.service, service                      )).head
-        //     //     ContactGroup.join(newContact, group)
-        //     // }
-        // }
+        var count = 0
+        for (entry <- (feed \\ "entry")) {
+            println(entry)
+            val newContact = Contact.create.owner(account.owner).saveMe
+            Identifier.createIfNeeded(    (entry \ "id"   ).text       , IdentifierType.GoogleId, newContact, account)
+            Identifier.createIfNeeded(    (entry \ "title").text       , IdentifierType.FullName, newContact, account)
+            for (email <- (entry \\ "email")) {
+                Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email   , newContact, account)
+            }
+            for (phone <- (entry \\ "phoneNumber")) {
+                Identifier.createIfNeeded( phone.text                  , IdentifierType.Phone   , newContact, account)
+            }
+            for (googleGroup <- (entry \\ "groupMembershipInfo")) {
+                val group = Group.findAll(By(Group.groupId    , (googleGroup \ "@href").toString),
+                                          By(Group.owner      , account.owner                   ),
+                                          By(Group.account    , account                         ),
+                                          By(Group.userCreated, true                            )).head
+                ContactGroup.join(newContact, group)
+            }
+            count += 1
+            updateSpanText(count + " contacts fetched...")
+        }
+        updateSpanText("All done! " + count + " contacts fetched.")
     }
-    
-    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
-        println("Google parseAndStoreGroups")
-        // for (entry <- (feed \\ "entry")) {
-        //     val name = (entry \ "title").text
-        //     val lastUpdated = parseDate((entry \ "updated").text)
-        //     val googleId = (entry \ "id").text
-        //     //TODO .account(service) needs to be here and add the current account to the group
-        //     Group.create.owner(User.currentUser.open_!).name(name).groupId(googleId).lastUpdated(lastUpdated).save
-        // }
-    }
-    
     def getContacts(account: Account) = {
         h(contacts / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, account.token) <> parseAndStoreContacts(account))
     }
     
+    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
+        for (entry <- (feed \\ "entry")) {
+            val name = (entry \ "title").text
+            val googleId = (entry \ "id").text
+            Group.create.name(name).groupId(googleId).owner(account.owner).account(account).userCreated(true).save
+            println("created group " + name)
+        }
+    }
     def getGroups(account: Account) = {
         h(groups / "default" / "full" <<? Map("max-results" -> 10000) <@ (consumer, account.token) <> parseAndStoreGroups(account))
     }

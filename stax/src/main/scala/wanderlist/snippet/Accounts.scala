@@ -64,9 +64,9 @@ class Accounts {
                             <lift:comet type="ContactCounter" name={contactCounterName}>
         			                <span id={contactCounterName}>click to get your contacts for this account</span>
                             </lift:comet>
-        				} else {
+        				} else { //TODO fix this since it's still a little buggy, but good enough
                             <lift:comet type="ContactCounter" name={contactCounterName}>
-        			                <span id={contactCounterName}>{count} contacts fetched.</span> //TODO fix this since it's still a little buggy, but good enough
+        			                <span id={contactCounterName}>{count} contacts fetched.</span>
                             </lift:comet>
         				}
         			}
