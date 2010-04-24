@@ -21,7 +21,7 @@ object VimeoService extends OauthProvider {
     
     def getContacts() = {
         val authToken = getAccountForUser(User.currentUser.open_!)
-        def parseAndStoreContacts(feed: scala.xml.Elem) = {
+        def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem) = {
             for (entry <- (feed \\ "user")) {
                 val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
                 Identifier.createIfNeeded((entry \ "id").text         , IdentifierType.TwitterId    , newContact, authToken)

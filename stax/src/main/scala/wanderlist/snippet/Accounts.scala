@@ -47,7 +47,7 @@ class Accounts {
                                 case Service.Foursquare => FoursquareService
                                 case Service.Google     => GoogleService
                                 case Service.Twitter    => TwitterService
-                            }).getAccountData(Token(account.accessTokenValue, account.accessTokenSecret), contactCounterName) 
+                            }).getAccountData(account, contactCounterName) 
                             SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
         				})
     				}</span>,

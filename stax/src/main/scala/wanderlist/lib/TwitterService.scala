@@ -30,7 +30,7 @@ object TwitterService extends OauthProvider with ContactSource  {
         Identifier.createIfNeeded((userXml \ "name"       ).text, IdentifierType.FullName     , self, account) 
     }
 
-    def parseAndStoreContacts(feed: scala.xml.Elem) = {
+    def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem) = {
         println("Twitter parseAndStoreContacts")
         // for (entry <- (feed \\ "user")) {
         //     println(entry)
@@ -45,17 +45,24 @@ object TwitterService extends OauthProvider with ContactSource  {
         updateSpanText("All done! " + 10000000 + " contacts fetched.")
     }
     
-    def parseAndStoreGroups(feed: scala.xml.Elem) = {
+    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
         println("Twitter parseAndStoreGroups")
     }
     //TODO implement paging for Twitter
     
-    def getContacts(accessToken: Token) = {
-        h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
+    def getContacts(account: Account) = {
+        h(contacts <@ (consumer, account.token) <> parseAndStoreContacts(account))
     }
     
-    def getGroups(accessToken: Token) = {
-        h(groups <@ (consumer, accessToken) <> parseAndStoreGroups)
+    def getGroups(account: Account) = {
+        val twitterGroups = List("following", "followers")
+        for (twitterGroup <- twitterGroups) {
+            Group.create.name(twitterGroup)
+                        .groupId(twitterGroup)
+                        .owner(User.currentUser.open_!)
+                        .account(account)
+                        .userCreated(false)
+        }
+        //TODO get lists here!        
     }
-    
 }

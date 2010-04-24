@@ -1,5 +1,6 @@
 package wanderlist.model 
 import _root_.net.liftweb.mapper._ 
+import dispatch.oauth._
 
 class Account extends LongKeyedMapper[Account] with IdPK {
     def getSingleton = Account
@@ -9,6 +10,9 @@ class Account extends LongKeyedMapper[Account] with IdPK {
     object service extends MappedEnum(this, Service)
     object authenticated extends MappedBoolean(this)
     object notes extends MappedString(this, 512)
+    
+    def token = Token(accessTokenValue, accessTokenSecret)
+    
 }
 object Account extends Account with LongKeyedMetaMapper[Account]
 

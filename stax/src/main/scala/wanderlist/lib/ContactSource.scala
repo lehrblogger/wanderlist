@@ -12,7 +12,7 @@ import wanderlist.comet._
 import _root_.net.liftweb.http._
 import _root_.net.liftweb.http.js._
 import _root_.net.liftweb.http.js.JsCmds._
-import scala.xml._
+import scala.xml.{NodeSeq, Node, Elem, Text, Null}
  
  
 trait ContactSource { // with Actor?
@@ -22,26 +22,26 @@ trait ContactSource { // with Actor?
     
     var contactCounterName: String = ""
      
-    def getAccountData(accessToken: Token, name: String) = { 
+    def getAccountData(account: Account, name: String) = { 
         contactCounterName = name
-        (new ContactFetcher(accessToken)) ! FetchStart
+        (new ContactFetcher(account)) ! FetchStart
     }
     
     def updateSpanText(newText: String) = {
         CounterMaster ! CounterUpdate(contactCounterName, newText)
     }
     
-    def getGroups(accessToken: Token)
-    def parseAndStoreGroups(feed: scala.xml.Elem)
+    def getGroups(account: Account)
+    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem)
     
-    def getContacts(accessToken: Token)
-    def parseAndStoreContacts(feed: scala.xml.Elem)
+    def getContacts(account: Account)
+    def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem)
     
-    class ContactFetcher(accessToken: Token) extends LiftActor {
+    class ContactFetcher(account: Account) extends LiftActor {
         protected def messageHandler = {
             case FetchStart => {
-                //getGroups(accessToken)
-                getContacts(accessToken)
+                getGroups(account)
+                getContacts(account)
             }
         }
     }

@@ -6,6 +6,17 @@ import dispatch.oauth._
 import dispatch.oauth.OAuth._
 import wanderlist.model._
 
+import net.liftweb._ 
+import http._ 
+import SHtml._ 
+import S._ 
+import js._ 
+import JsCmds._ 
+import mapper._ 
+import util._ 
+import Helpers._ 
+
+
 object FoursquareService extends OauthProvider with ContactSource {
     val service = Service.Foursquare
     
@@ -21,49 +32,48 @@ object FoursquareService extends OauthProvider with ContactSource {
     val groups = api / ""
     val user = api / "user"
     
+    def createIdentifiersForElemAndContact(elem: scala.xml.Node, contact: Contact, account: Account) = {
+        Identifier.createIfNeeded((elem \ "id"       ).text                                 , IdentifierType.FoursquareId , contact, account)
+        Identifier.createIfNeeded((elem \ "firstname").text + " " + (elem \ "lastname").text, IdentifierType.FullName     , contact, account)
+        Identifier.createIfNeeded((elem \ "phone"    ).text                                 , IdentifierType.Phone        , contact, account)
+        Identifier.createIfNeeded((elem \ "email"    ).text                                 , IdentifierType.Email        , contact, account)
+        Identifier.createIfNeeded((elem \ "twitter"  ).text                                 , IdentifierType.TwitterHandle, contact, account)
+        Identifier.createIfNeeded((elem \ "facebook" ).text                                 , IdentifierType.FacebookId   , contact, account)
+    }
+    
     def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
         val feed = h(user <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
-        Identifier.createIfNeeded((feed \ "id"       ).text                                 , IdentifierType.FoursquareId , self, account)
-        Identifier.createIfNeeded((feed \ "firstname").text + " " + (feed \ "lastname").text, IdentifierType.FullName     , self, account)
-        Identifier.createIfNeeded((feed \ "phone"    ).text                                 , IdentifierType.Phone        , self, account)
-        Identifier.createIfNeeded((feed \ "email"    ).text                                 , IdentifierType.Email        , self, account)
-        Identifier.createIfNeeded((feed \ "twitter"  ).text                                 , IdentifierType.TwitterHandle, self, account)
-        Identifier.createIfNeeded((feed \ "facebook" ).text                                 , IdentifierType.FacebookId   , self, account)    
+        createIdentifiersForElemAndContact(feed, self, account)
     }
     
-    def parseAndStoreContacts(feed: scala.xml.Elem) = {
-        println("Foursquare parseAndStoreContacts")
-        // for (entry <- (feed \\ "user")) { 
-        //     println(entry)
-        //     val newContact = Contact.create.owner(User.currentUser.open_!).saveMe
-        //                 Identifier.createIfNeeded((entry \ "id").text                                           , IdentifierType.FoursquareId, newContact, authToken)
-        //                 Identifier.createIfNeeded(((entry \ "firstname").text + " " + (entry \ "lastname").text), IdentifierType.FullName,     newContact, authToken)
-        //                 for (email <- (entry \\ "email")) {
-        //                     Identifier.createIfNeeded(email.text,    IdentifierType.Email        , newContact, authToken)
-        //                 }
-        //                 for (phone <- (entry \\ "phone")) {
-        //                     Identifier.createIfNeeded(phone.text,    IdentifierType.Phone        , newContact, authToken)
-        //                 }
-        //                 for (twitter <- (entry \\ "twitter")) {
-        //                     Identifier.createIfNeeded(twitter.text,  IdentifierType.TwitterHandle, newContact, authToken)
-        //                 }
-        //                 for (facebook <- (entry \\ "facebook")) {
-        //                     Identifier.createIfNeeded(facebook.text, IdentifierType.FacebookId   , newContact, authToken)
-        //                 }
-        // }
-        //updateSpanText("All done! " + count + " contacts fetched.")
+    def parseAndStoreContacts(account: Account)(feed: scala.xml.Elem) = {
+        var count = 0
+        for (entry <- (feed \\ "user")) {
+            val newContact = Contact.create.owner(account.owner).saveMe
+            createIdentifiersForElemAndContact(entry, newContact, account)
+            val group = Group.findAll(By(Group.name       , "friends"              ),
+                                      By(Group.groupId    , "friends"              ),
+                                      By(Group.owner      , account.owner),
+                                      By(Group.account    , account                ),
+                                      By(Group.userCreated, false                  )).head
+            ContactGroup.join(newContact, group)
+            count += 1
+            updateSpanText(count + " contacts fetched...")
+        }
+        updateSpanText("All done! " + count + " contacts fetched.")
     } 
     
-    def parseAndStoreGroups(feed: scala.xml.Elem) = {
-        println("Foursquare parseAndStoreGroups")
+    def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {}
+    
+    def getContacts(account: Account) = {
+        h(contacts <@ (consumer, account.token) <> parseAndStoreContacts(account))
     }
     
-    def getContacts(accessToken: Token) = {
-        h(contacts <@ (consumer, accessToken) <> parseAndStoreContacts)
-    }
-    
-    def getGroups(accessToken: Token) = {
-        h(groups <@ (consumer, accessToken) <> parseAndStoreGroups)
+    def getGroups(account: Account) = {
+        val foursquareGroups = List("friends", "following", "followers")
+        for (foursquareGroup <- foursquareGroups) {
+            Group.create.name(foursquareGroup).groupId(foursquareGroup).owner(account.owner).account(account).userCreated(false).save
+        }
     }
 }
 
