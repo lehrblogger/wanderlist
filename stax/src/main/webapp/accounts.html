@@ -1,9 +1,9 @@
-<lift:surround with="login" at="content"> 
+<lift:surround with="default" at="content"> 
 	<h4>These are your authorized accounts:</h4>
-	<lift:Accounts.list all_id="all_accounts">
+	<lift:AccountList.list all_id="all_accounts">
 		<div id="all_accounts"> 
 			<ol>
-				<account:list> 
+				<accountList:list> 
 					<li>
 						<strong><account:type/></strong>
 						<account:identifiers>
@@ -18,10 +18,10 @@
 						<account:fetch>button to fetch contacts</account:fetch>
 						<account:status>status for contacts</account:status>
 					</li> 
-				</account:list>
+				</accountList:list>
 			</ol>
 		 </div>
-	</lift:Accounts.list>
+	</lift:AccountList.list>
 	<p>
 		each of these will get more info about the account, as well as how many contacts it has
 		if the number of contacts is zero, it will have a link that will start the comet actor

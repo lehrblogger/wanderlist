@@ -1,0 +1,15 @@
+/* for MailChimp form */
+#mc_embed_signup #mce-EMAIL { 
+  width: 270px;
+  text-align: center;
+  padding: 4px 0px 1px 0px;
+}
+#mc_embed_signup #mc-embedded-subscribe {
+  color: #32383E;
+}
+#mc_embed_signup div.mce_inline_error {
+  display: none !important;
+}
+#mc_embed_signup fieldset {
+  border: none;
+}

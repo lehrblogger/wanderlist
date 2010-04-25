@@ -1,39 +1,46 @@
-<lift:surround with="login" at="content"> 
-	<h3>Sample To Do List Application</h3>
-	<h4>(this is here just to demonstrate fancy ajaxy Lift stuff)</h4>
+<lift:surround with="default" at="content"> 
+	<h3>
+		wander the <a href="http://xkcd.com/256/">internet</a>, bring your <a href="http://www.facebook.com/home.php#/friends/">f</a><a href="http://twitter.com/following">r</a><a href="http://foursquare.com/manage_friends">i</a><a href="http://www.flickr.com/photos/friends/">e</a><a href="http://www.google.com/contacts">n</a><a href="http://www.linkedin.com/connections?trk=hb_side_cnts is">d</a><a href="https://github.com/">s</a>
+	</h3>
+	<p>
+		Wanderli.st is a tool to help us understand and manage our ‘friends’ lists on all of the web sites where we already socialize. 
 	<br/>
-
-	<lift:TD.add form="post"> 
-		<table> 
-   		<tr> 
-			<td>Description:</td> 
-			<td><todo:desc>To Do</todo:desc></td> 
-    		</tr>
-    		<tr> 
-     		<td>Priority</td> 
-     		<td><todo:priority><select><option>1</option></select></todo:priority></td> 
-    		</tr> 
-    		<tr> 
-     		<td>&nbsp;</td> 
-     		<td><todo:submit><button>New</button> </todo:submit></td> 
-    		</tr> 
-  		</table> 
- 	</lift:TD.add> 
-
-	<lift:TD.list all_id="all_todos"> 
-	 <div id="all_todos"> 
-	   <div>Exclude done <todo:exclude/></div> 
-	   <ul> 
-	    <todo:list> 
-	      <li> 
-	       <todo:check><input type="checkbox"/></todo:check> 
-	       <todo:priority> 
-	         <select><option>1</option></select> 
-	       </todo:priority> 
-	       <todo:desc>To Do</todo:desc> 
-	      </li> 
-	    </todo:list> 
-	   </ul> 
-	 </div> 
-	</lift:TD.list>
+		Part data visualization and part privacy interface, it lets us structure our social spaces on the Internet more like those in the real world.
+	</p>
+	<p>
+		<!-- Begin MailChimp Signup Form -->
+		<!--[if IE]>
+		<style type="text/css" media="screen">
+		 	#mc_embed_signup fieldset {
+		    	position: relative;
+	  		}
+	  		#mc_embed_signup legend {
+	    		position: absolute;
+	    		top: -1em;
+	    		left: .2em;
+	  		}
+		</style>
+		<![endif]-->
+		<script type="text/javascript" src="http://wanderli.us1.list-manage.com/js/jquery-1.2.6.min.js"></script>
+		<script type="text/javascript" src="http://wanderli.us1.list-manage.com/js/jquery.validate.js"></script>
+		<script type="text/javascript" src="http://wanderli.us1.list-manage.com/js/jquery.form.js"></script>
+		<script type="text/javascript" src="http://wanderli.us1.list-manage.com/subscribe/xs-js?u=67b33604cb44dc71cb2d30ab0&amp;id=2601b91cf7"></script>
+		<div id="mc_embed_signup">
+		    <form action="http://wanderli.us1.list-manage.com/subscribe/post?u=67b33604cb44dc71cb2d30ab0&amp;id=2601b91cf7" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+		        <fieldset>
+		            <div class="mc-field-group">
+		                <input type="text" value="enter your email address to receive updates" onclick="this.select();" name="EMAIL" class="required email" id="mce-EMAIL"/>
+		                <input type="submit" value="subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn"/>
+		            </div>
+		            <p>
+		                <div id="mce-responses">
+		                    <div class="response" id="mce-error-response" style="display:none"></div>
+		                    <div class="response" id="mce-success-response" style="display:none"></div>
+		                </div>
+		            </p>
+		        </fieldset>
+		    </form>
+		</div>
+		<!--End mc_embed_signup-->
+	</p>
 </lift:surround>

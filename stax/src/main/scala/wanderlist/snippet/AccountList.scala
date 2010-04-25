@@ -15,7 +15,7 @@ import Helpers._
 import scala.xml.{NodeSeq, Text, UnprefixedAttribute, Null} 
 import dispatch.oauth._
  
-class Accounts { 
+class AccountList { 
     private def desc(account: Account, reDraw: () => JsCmd) = 
         swappable(<span>{account.notes}</span>, <span>{ajaxText(account.notes, v => {account.notes(v).save; reDraw()})}</span>)
 

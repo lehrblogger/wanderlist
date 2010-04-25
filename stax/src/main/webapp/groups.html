@@ -1,3 +1,11 @@
-<lift:surround with="login" at="content"> 
-	groups!
+<lift:surround with="default" at="content">
+	<div>
+		<h4>These are your groups, organized by account:</h4>
+		<ol>
+			<lift:GroupList.listGroups> 
+      			<li><groupList:name/></li> 
+			</lift:GroupList.listContacts>
+		</ol> 
+ 	</div>
 </lift:surround>
+

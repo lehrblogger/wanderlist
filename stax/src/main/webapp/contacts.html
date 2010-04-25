@@ -1,23 +1,14 @@
-<lift:surround with="login" at="content">
-	<h3><lift:CL.name>Hi, <cl:name/></lift:CL.name></h3>
-	<div>
-		<h4>These are your groups:</h4>
-		<ol>
-			<lift:CL.listGroups> 
-      			<li><cl:name/></li> 
-			</lift:CL.listGroups>
-		</ol> 
- 	</div>
+<lift:surround with="default" at="content">
 	<div>
 		<h4>These are some of your contacts:</h4>
 		<ol>
-			<lift:CL.listContacts> 
+			<lift:ContactList.listContacts> 
       			<li><cl:name/>
 					<cl:identifiers><identifier:list><ul>
 						<li><i:value/></li> 
 					</ul></identifier:list></cl:identifiers>
 				</li> 
-			</lift:CL.listContacts>
+			</lift:ContactList.listContacts>
 		</ol> 
  	</div>
 </lift:surround>
