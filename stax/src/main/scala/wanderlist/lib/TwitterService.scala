@@ -22,23 +22,21 @@ object TwitterService extends OauthProvider with ContactSource  {
     val groups = api / ""
     val user = api / "statuses" / "user_timeline.xml"
 
-    def createIdentifiersForElemContactAccount(elem: scala.xml.Node, contact: Contact, account: Account) = {
-        Identifier.createIfNeeded((elem \ "id"         ).text, IdentifierType.TwitterId    , contact, account)
-        Identifier.createIfNeeded((elem \ "screen_name").text, IdentifierType.TwitterHandle, contact, account)
-        Identifier.createIfNeeded((elem \ "name"       ).text, IdentifierType.FullName     , contact, account)
+    def identifierPairListFromElem(elem: scala.xml.Node) = { 
+        List(((elem \ "id"         ).text, IdentifierType.TwitterId    ),
+             ((elem \ "screen_name").text, IdentifierType.TwitterHandle),
+             ((elem \ "name"       ).text, IdentifierType.FullName     ))
     }
-
+    
     def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
         val feed = h(user <<? Map("count" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
         createIdentifiersForElemContactAccount(((feed \\ "status") \ "user").theSeq.first, self, account)
     }
 
-
     def parseAndStoreContacts(account: Account, additionalGroups: List[Group])(feed: scala.xml.Elem) = {
         var count = account.contacts.length
         for (entry <- (feed \\ "user")) {
-            println(entry)
-            val newContact = Contact.create.owner(account.owner).saveMe
+            val newContact = findContactForIdentifiersOrCreate(entry, account)
             createIdentifiersForElemContactAccount(entry, newContact, account)
             for (group <- additionalGroups) {
                 ContactGroup.join(newContact, group)

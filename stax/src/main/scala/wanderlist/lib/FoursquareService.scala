@@ -31,13 +31,13 @@ object FoursquareService extends OauthProvider with ContactSource {
     val groups = api / ""
     val user = api / "user"
     
-    def createIdentifiersForElemContactAccount(elem: scala.xml.Node, contact: Contact, account: Account) = {
-        Identifier.createIfNeeded((elem \ "id"       ).text                                 , IdentifierType.FoursquareId , contact, account)
-        Identifier.createIfNeeded((elem \ "firstname").text + " " + (elem \ "lastname").text, IdentifierType.FullName     , contact, account)
-        Identifier.createIfNeeded((elem \ "phone"    ).text                                 , IdentifierType.Phone        , contact, account)
-        Identifier.createIfNeeded((elem \ "email"    ).text                                 , IdentifierType.Email        , contact, account)
-        Identifier.createIfNeeded((elem \ "twitter"  ).text                                 , IdentifierType.TwitterHandle, contact, account)
-        Identifier.createIfNeeded((elem \ "facebook" ).text                                 , IdentifierType.FacebookId   , contact, account)
+    def identifierPairListFromElem(elem: scala.xml.Node) = { 
+        List(((elem \ "id"       ).text                                 , IdentifierType.FoursquareId ),
+             ((elem \ "firstname").text + " " + (elem \ "lastname").text, IdentifierType.FullName     ),
+             ((elem \ "phone"    ).text                                 , IdentifierType.Phone        ),
+             ((elem \ "email"    ).text                                 , IdentifierType.Email        ),
+             ((elem \ "twitter"  ).text                                 , IdentifierType.TwitterHandle),
+             ((elem \ "facebook" ).text                                 , IdentifierType.FacebookId   ))
     }
     
     def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
@@ -48,13 +48,13 @@ object FoursquareService extends OauthProvider with ContactSource {
     def parseAndStoreContacts(account: Account, additionalGroups: List[Group])(feed: scala.xml.Elem) = {
         var count = 0
         for (entry <- (feed \\ "user")) {
-            val newContact = Contact.create.owner(account.owner).saveMe
+            val newContact = findContactForIdentifiersOrCreate(entry, account)
             createIdentifiersForElemContactAccount(entry, newContact, account)
-            val group = Group.findAll(By(Group.name       , "friends"              ),
-                                      By(Group.groupId    , "friends"              ),
-                                      By(Group.owner      , account.owner       ),
-                                      By(Group.account    , account                ),
-                                      By(Group.userCreated, false                  )).head
+            val group = Group.findAll(By(Group.name       , "friends"    ),
+                                      By(Group.groupId    , "friends"    ),
+                                      By(Group.owner      , account.owner),
+                                      By(Group.account    , account      ),
+                                      By(Group.userCreated, false        )).head
             ContactGroup.join(newContact, group)
             count += 1
             updateSpanText(count + " contacts fetched...")

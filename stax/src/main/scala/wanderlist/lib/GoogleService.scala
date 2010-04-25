@@ -24,6 +24,18 @@ object GoogleService extends OauthProvider with ContactSource  {
     val extras = Map("scope" -> api.to_uri.toString, "oauth_callback" -> (:/(Props.get("host").open_!) / "service" / callback).to_uri.toString)
     val account = :/("www.google.com").secure / "accounts" 
 
+    def identifierPairListFromElem(elem: scala.xml.Node) = { 
+        var identifierPairList = List(((elem \ "id"   ).text       , IdentifierType.GoogleId),
+                                      ((elem \ "title").text       , IdentifierType.FullName))
+        for (email <- (elem \\ "email")) {
+            identifierPairList ::= ((email \ "@address").toString, IdentifierType.Email)
+        }
+        for (phone <- (elem \\ "phoneNumber")) {
+            identifierPairList ::= (phone.text, IdentifierType.Phone)
+        }
+        identifierPairList
+    }
+    
     def saveIdentifiersForSelf(accessToken: Token, self: Contact, account: Account) = {
         val feed = h(user / "default" / "full" <<? Map("max-results" -> 0) <@ (consumer, accessToken) <> identity[scala.xml.Elem])
         Identifier.createIfNeeded( (feed \  "id"              ).text, IdentifierType.GoogleId, self, account)
@@ -31,24 +43,11 @@ object GoogleService extends OauthProvider with ContactSource  {
         Identifier.createIfNeeded(((feed \ "author") \ "email").text, IdentifierType.Email   , self, account)
     }
     
-    def parseDate(dateString: String) = {
-        val parser =  new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'")
-        parser.parse(dateString)
-    }
-    
     def parseAndStoreContacts(account: Account, additionalGroups: List[Group])(feed: scala.xml.Elem) = {
         var count = 0
         for (entry <- (feed \\ "entry")) {
-            println(entry)
-            val newContact = Contact.create.owner(account.owner).saveMe
-            Identifier.createIfNeeded(    (entry \ "id"   ).text       , IdentifierType.GoogleId, newContact, account)
-            Identifier.createIfNeeded(    (entry \ "title").text       , IdentifierType.FullName, newContact, account)
-            for (email <- (entry \\ "email")) {
-                Identifier.createIfNeeded((email \ "@address").toString, IdentifierType.Email   , newContact, account)
-            }
-            for (phone <- (entry \\ "phoneNumber")) {
-                Identifier.createIfNeeded( phone.text                  , IdentifierType.Phone   , newContact, account)
-            }
+            val newContact = findContactForIdentifiersOrCreate(entry, account)
+            createIdentifiersForElemContactAccount(entry, newContact, account)
             for (googleGroup <- (entry \\ "groupMembershipInfo")) {
                 val group = Group.findAll(By(Group.groupId    , (googleGroup \ "@href").toString),
                                           By(Group.owner      , account.owner                   ),
@@ -70,7 +69,6 @@ object GoogleService extends OauthProvider with ContactSource  {
             val name = (entry \ "title").text
             val googleId = (entry \ "id").text
             Group.create.name(name).groupId(googleId).owner(account.owner).account(account).userCreated(true).save
-            println("created group " + name)
         }
     }
     def getGroups(account: Account) = {

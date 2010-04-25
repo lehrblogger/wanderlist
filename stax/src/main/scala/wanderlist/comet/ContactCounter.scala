@@ -26,7 +26,6 @@ class ContactCounter extends CometActor { //with CometListener {
     
     override def lowPriority: PartialFunction[Any, Unit] = {
         case newText:String => {
-            println("Got CounterUpdate " + name.open_! + "," + newText)
             partialUpdate(SetHtml(name.open_!, Text(newText)))
         }
         
