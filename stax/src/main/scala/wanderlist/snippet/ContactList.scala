@@ -17,9 +17,12 @@ import scala.xml.{NodeSeq, Elem, Text}
 class ContactList {
     def getDisplayableName(contact: Contact): String = {
         for (identifierType <- List(IdentifierType.FullName, IdentifierType.Email,IdentifierType.TwitterHandle)) {
-            val value = Identifier.findAll(By(Identifier.contact, contact),
-                                           By(Identifier.idType, identifierType)).head.value
-            if (value != "") return value
+            val identifiers = Identifier.findAll(By(Identifier.contact, contact),
+                                           By(Identifier.idType, identifierType))
+            if (identifiers.length > 0) { //TODO fix this to use pattern matching
+                val value = identifiers.head.value
+                if (value != "") return value
+            }
         }
         return ""
     }
