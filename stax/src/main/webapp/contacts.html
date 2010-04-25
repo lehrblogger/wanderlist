@@ -2,9 +2,12 @@
 	<div>
 		<h4>These are your contacts:</h4>
 		<ol>
-			<lift:ContactList.listContacts> 
-      			<li><contact:name/></li> 
-			</lift:ContactList.listContacts>
+			<lift:ContactList.list> 
+      			<li>
+					<contact:name/>
+					<contact:info/>
+				</li> 
+			</lift:ContactList.list>
 		</ol> 
  	</div>
 </lift:surround>

@@ -24,7 +24,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("wanderlist") 
-    Schemifier.schemify(true, Log.infoF _, User, ToDo, Account, Contact, ContactGroup, Group, Identifier, IdentifierAccount, TempToken)
+    Schemifier.schemify(true, Log.infoF _, User, Account, Contact, ContactGroup, Group, Identifier, IdentifierAccount, TempToken)
 
     Log.info("Hostname: " + Props.hostName)
     Log.info("Username: " + Props.userName)

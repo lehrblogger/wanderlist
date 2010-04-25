@@ -24,41 +24,51 @@ class ContactList {
         return ""
     }
     
-    def getNameCloseLink(contact: Contact, linkId: String): scala.xml.Elem = {
-        a(() => {
-            println("click close for " + getDisplayableName(contact))
-            SetHtml(linkId, getNameOpenLink(contact, linkId))
-		}, Text(getDisplayableName(contact) + " close"), ("id", linkId))
-	}
-	
-    def getNameOpenLink(contact: Contact, linkId: String): scala.xml.Elem = {
-        a(() => {
-            println("click open for " + getDisplayableName(contact))
-            SetHtml(linkId, getNameCloseLink(contact, linkId))
-		}, Text(getDisplayableName(contact) + " open"), ("id", linkId))
+    def getContactInfo(contact: Contact) = {
+        println(contact.id)
+        <lift:embed what="/_contact_info" contact_id={contact.id.toString}/>
     }
     
-    def listContacts(xhtml: NodeSeq) = { 
+    def getNameCloseLink(contact: Contact, linkId: String, infoId: String): scala.xml.Elem = a(() => {
+            SetHtml(linkId, getNameOpenLink(contact, linkId, infoId))  & SetHtml(infoId, Text(""))
+		}, Text(getDisplayableName(contact)))
+	
+    def getNameOpenLink(contact: Contact, linkId: String, infoId: String): scala.xml.Elem = a(() => {
+            SetHtml(linkId, getNameCloseLink(contact, linkId, infoId)) & SetHtml(infoId, getContactInfo(contact))
+		}, Text(getDisplayableName(contact)))
+    
+    def list(xhtml: NodeSeq) = { 
         Contact.findAll(By(Contact.owner, User.currentUser.open_!)).flatMap(contact => {
             val linkId = Helpers.nextFuncName
+            val infoId = Helpers.nextFuncName
             bind("contact", xhtml, 
-                "name" -> getNameOpenLink(contact, linkId)
+                "name" -> <span id={linkId}>{getNameOpenLink(contact, linkId, infoId)}</span>,
+                "info" -> <div id={infoId}></div>
             )
         })
     }
+    
+    def info(xhtml: NodeSeq) = {
+        val contact = Contact.findAll(By(Contact.id   , S.attr("contact_id").open_!.toInt ),
+                                      By(Contact.owner, User.currentUser.open_!           )).head
+        bind("contact", xhtml, 
+            "identifiers" -> contact.identifiers.flatMap(identifier => 
+                bind("identifier", chooseTemplate("identifiers", "list", xhtml), 
+                    "type"    -> identifier.idType,
+                    "value"   -> identifier.value,
+                    "sources" -> identifier.accounts.flatMap(account => 
+                        bind("source", chooseTemplate("sources", "list", xhtml), 
+                            "type"    -> account.service
+                        )
+                    )
+                )
+            ),
+            "groupsList" -> contact.groups.flatMap(group => 
+                bind("group", chooseTemplate("groups", "list", xhtml), 
+                    "name"          -> group.name,
+                    "account_type"  -> group.account.obj.open_!.service
+                )
+            )
+        )
+    }
 }
-// class ContactList { 
-//     def listContacts(xhtml: NodeSeq) = { 
-//         Contact.findAll(By(Contact.owner, User.currentUser.open_!), MaxRows(30)).flatMap(
-//             contact => bind("contactList", xhtml, 
-//                 "name"   -> Identifier.findAll(By(Identifier.contact, contact),
-//                                                By(Identifier.idType, IdentifierType.FullName)).head.value,
-//                 "identifiers" -> Identifier.findAll(By(Identifier.contact, contact)).flatMap(
-//                     identifier => bind("i", chooseTemplate("identifier", "list", xhtml), 
-//                         "value" -> identifier.value
-//                     )
-//                 )
-//             )
-//         )
-//     }
-// }
