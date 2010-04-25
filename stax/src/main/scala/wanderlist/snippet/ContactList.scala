@@ -11,7 +11,7 @@ import JsCmds._
 import mapper._ 
 import util._ 
 import Helpers._ 
-import scala.xml.{NodeSeq, Text} 
+import scala.xml.{NodeSeq, Elem, Text} 
  
  
 class ContactList {
@@ -24,12 +24,27 @@ class ContactList {
         return ""
     }
     
+    def getNameCloseLink(contact: Contact, linkId: String): scala.xml.Elem = {
+        a(() => {
+            println("click close for " + getDisplayableName(contact))
+            SetHtml(linkId, getNameOpenLink(contact, linkId))
+		}, Text(getDisplayableName(contact) + " close"), ("id", linkId))
+	}
+	
+    def getNameOpenLink(contact: Contact, linkId: String): scala.xml.Elem = {
+        a(() => {
+            println("click open for " + getDisplayableName(contact))
+            SetHtml(linkId, getNameCloseLink(contact, linkId))
+		}, Text(getDisplayableName(contact) + " open"), ("id", linkId))
+    }
+    
     def listContacts(xhtml: NodeSeq) = { 
-        Contact.findAll(By(Contact.owner, User.currentUser.open_!)).flatMap(
-            contact => bind("contact", xhtml, 
-                "name" -> getDisplayableName(contact)
+        Contact.findAll(By(Contact.owner, User.currentUser.open_!)).flatMap(contact => {
+            val linkId = Helpers.nextFuncName
+            bind("contact", xhtml, 
+                "name" -> getNameOpenLink(contact, linkId)
             )
-        )
+        })
     }
 }
 // class ContactList { 
