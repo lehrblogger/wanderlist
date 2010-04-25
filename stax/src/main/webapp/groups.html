@@ -1,11 +1,21 @@
-<lift:surround with="default" at="content">
-	<div>
-		<h4>These are your groups, organized by account:</h4>
-		<ol>
-			<lift:GroupList.listGroups> 
-      			<li><groupList:name/></li> 
-			</lift:GroupList.listContacts>
-		</ol> 
- 	</div>
+<lift:surround with="default" at="content"> 
+	<h4>These are your groups, organized by account:</h4>
+	<lift:GroupList.list all_id="all_groups">
+		<div id="all_groups"> 
+			<ul>
+				<accountList:list> 
+					<li>
+						<strong><account:type/></strong> - <em><account:notes>notes</account:notes></em>
+						<ol>
+							<account:groups>
+								<group:list>
+									<li><g:name/>: <g:size/></li>
+								</group:list>	
+							</account:groups>	
+						</ol>
+					</li> 
+				</accountList:list>
+			</ul>
+		 </div>
+	</lift:GroupList.list>
 </lift:surround>
-

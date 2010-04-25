@@ -5,16 +5,14 @@
 			<ol>
 				<accountList:list> 
 					<li>
-						<strong><account:type/></strong>
-						<account:identifiers>
-							<identifier:list>
-								<ul>
-									<li><ident:type/>: <ident:value/></li>
-								</ul>
-							</identifier:list>
-						</account:identifiers>
-						<em><account:notes>notes</account:notes></em>
-						<br/>
+						<strong><account:type/></strong> - <em><account:notes>notes</account:notes></em>
+						<ul>
+							<account:identifiers>
+								<identifier:list>
+									<li>your <ident:type/>: <ident:value/></li>
+									</identifier:list>		
+							</account:identifiers>			
+						</ul>
 						<account:fetch>button to fetch contacts</account:fetch>
 						<account:status>status for contacts</account:status>
 					</li> 
@@ -22,9 +20,4 @@
 			</ol>
 		 </div>
 	</lift:AccountList.list>
-	<p>
-		each of these will get more info about the account, as well as how many contacts it has
-		if the number of contacts is zero, it will have a link that will start the comet actor
-		that will fetch the contacts and update the page
-	</p>
 </lift:surround>

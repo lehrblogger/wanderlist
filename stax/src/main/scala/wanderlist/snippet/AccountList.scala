@@ -36,13 +36,13 @@ class AccountList {
             val count = account.contacts.length
             bind("account", xhtml, 
                 "type" -> account.service,
+                "notes" -> desc(account, reDraw),
                 "identifiers" -> identifiersToShow(account).flatMap(identifier => 
                     bind("ident", chooseTemplate("identifier", "list", xhtml),
                         "type"  -> identifier.idType,
                         "value" -> identifier.value
                     )
                 ),
-                "notes" -> desc(account, reDraw),
                 "fetch" -> {
                         if (count == 0) {
                             <span id={buttonSpanId}>{
@@ -80,7 +80,7 @@ class AccountList {
 
         def inner(): NodeSeq = { 
             def reDraw() = SetHtml(id, inner())
-            bind("account", xhtml, "list"    -> doList(reDraw)_ )
+            bind("accountList", xhtml, "list"    -> doList(reDraw)_ )
         }
 
         inner()

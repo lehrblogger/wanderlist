@@ -37,8 +37,8 @@ class Boot {
     val entries = Menu(Loc("Home"    , List("index")   , "Home"                            )) ::
                   Menu(Loc("Add"     , List("add")     , "Add an Account"      , IfLoggedIn)) ::
                   Menu(Loc("Accounts", List("accounts"), "Manage your Accounts", IfLoggedIn)) ::
-                  Menu(Loc("Groups"  , List("groups")  , "View your Groups"    , IfLoggedIn)) ::
-                  Menu(Loc("Contacts", List("contacts"), "View your Contacts"  , IfLoggedIn)) ::
+                  Menu(Loc("Groups"  , List("groups")  , "Organize your Groups"    , IfLoggedIn)) ::
+                  Menu(Loc("Contacts", List("contacts"), "Explore your Contacts"  , IfLoggedIn)) ::
                   User.sitemap
     LiftRules.setSiteMap(SiteMap(entries:_*))
 

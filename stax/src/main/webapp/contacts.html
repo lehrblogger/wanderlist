@@ -1,13 +1,9 @@
 <lift:surround with="default" at="content">
 	<div>
-		<h4>These are some of your contacts:</h4>
+		<h4>These are your contacts:</h4>
 		<ol>
 			<lift:ContactList.listContacts> 
-      			<li><cl:name/>
-					<cl:identifiers><identifier:list><ul>
-						<li><i:value/></li> 
-					</ul></identifier:list></cl:identifiers>
-				</li> 
+      			<li><contact:name/></li> 
 			</lift:ContactList.listContacts>
 		</ol> 
  	</div>
