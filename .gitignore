@@ -10,6 +10,8 @@ src_managed/
 target/
 stax/build/
 stax/derby.log
+stax/derby_db
 stax/lift_example
+stax/lift_example2
 stax/src/resources/props/*
 stax/src/main/resources/props/*

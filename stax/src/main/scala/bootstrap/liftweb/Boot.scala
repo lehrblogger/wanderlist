@@ -83,7 +83,7 @@ class Boot {
 */
 object DBVendor extends ConnectionManager {
   val driverName = Props.get("db.driver") openOr "org.apache.derby.jdbc.EmbeddedDriver"
-  val dbUrl      = Props.get("db.url")    openOr "jdbc:derby:lift_example;create=true"
+  val dbUrl      = Props.get("db.url")    openOr "jdbc:derby:derby_db;create=true"
 
   def newConnection(name: ConnectionIdentifier): Box[Connection] = {
     try {
