@@ -67,7 +67,7 @@ object FoursquareService extends OauthProvider with ContactSource {
     
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {}
     def getGroups(account: Account) = {
-        val foursquareGroups = List("friends", "following", "followers")
+        val foursquareGroups = List("friends")//, "following", "followers")
         for (foursquareGroup <- foursquareGroups) {
             Group.create.name(foursquareGroup).groupId(foursquareGroup).owner(account.owner).account(account).userCreated(false).save
         }

@@ -18,7 +18,7 @@ class ContactList {
     def getDisplayableName(contact: Contact): String = {
         for (identifierType <- List(IdentifierType.FullName, IdentifierType.Email,IdentifierType.TwitterHandle)) {
             val identifiers = Identifier.findAll(By(Identifier.contact, contact),
-                                           By(Identifier.idType, identifierType))
+                                                 By(Identifier.idType, identifierType))
             if (identifiers.length > 0) { //TODO fix this to use pattern matching
                 val value = identifiers.head.value
                 if (value != "") return value
@@ -42,12 +42,14 @@ class ContactList {
     
     def list(xhtml: NodeSeq) = { 
         Contact.findAll(By(Contact.owner, User.currentUser.open_!)).flatMap(contact => {
-            val linkId = Helpers.nextFuncName
-            val infoId = Helpers.nextFuncName
-            bind("contact", xhtml, 
-                "name" -> <span id={linkId}>{getNameOpenLink(contact, linkId, infoId)}</span>,
-                "info" -> <div id={infoId}></div>
-            )
+            if (contact != User.currentUser.open_!.selfContact) {
+                val linkId = Helpers.nextFuncName
+                val infoId = Helpers.nextFuncName
+                bind("contact", xhtml, 
+                    "name" -> <span id={linkId}>{getNameOpenLink(contact, linkId, infoId)}</span>,
+                    "info" -> <div id={infoId}></div>
+                )
+            }
         })
     }
     

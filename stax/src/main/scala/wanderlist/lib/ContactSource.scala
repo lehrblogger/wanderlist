@@ -35,16 +35,14 @@ trait ContactSource { // with Actor?
         val identifierPairList = identifierPairListFromElem(elem)
         for (identifierPair <- identifierPairList) {
             if (identifierPair._1 != "") {
-                Identifier.findAll(By(Identifier.value , identifierPair._1),
-                                   By(Identifier.idType, identifierPair._2)).head match {
-                     case i: Identifier => i.contact.obj match {
-                        case Full(c) => {
-                            if (c.owner.obj.open_! == account.owner) {
-                                return c
-                            }
-                        }
+                Identifier.findAll(By(Identifier.owner , account.owner),
+                                   By(Identifier.value , identifierPair._1),
+                                   By(Identifier.idType, identifierPair._2)) match {
+                     case List(i) => i.contact.obj match {
+                        case Full(c) => return c
                         case _       => {}
-                     }
+                    }
+                    case _       => {}
                 }
             }
         }

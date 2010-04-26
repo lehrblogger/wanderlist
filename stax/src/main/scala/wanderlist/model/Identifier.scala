@@ -10,6 +10,7 @@ class Identifier extends LongKeyedMapper[Identifier] with IdPK {
     //object lastUpdated extends MappedDateTime(this)
     object idType extends MappedEnum(this, IdentifierType)
     object contact extends MappedLongForeignKey(this, Contact)
+    object owner extends MappedLongForeignKey(this, User)
     
     def accounts = IdentifierAccount.findAll(By(IdentifierAccount.identifier, this.id)).map(_.account.obj.open_!)
 }
@@ -26,7 +27,7 @@ object Identifier extends Identifier with LongKeyedMetaMapper[Identifier] {
                 }
             }
             case _ => {
-                val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).saveMe
+                val newIdentifier = Identifier.create.value(value).idType(idType).contact(contact).owner(account.owner).saveMe
                 IdentifierAccount.create.identifier(newIdentifier).account(account).save
             }
         }
