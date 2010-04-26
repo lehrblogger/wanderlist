@@ -31,7 +31,7 @@ object GoogleService extends OauthProvider with ContactSource  {
             identifierPairList ::= ((email \ "@address").toString, IdentifierType.Email)
         }
         for (phone <- (elem \\ "phoneNumber")) {
-            identifierPairList ::= (phone.text, IdentifierType.Phone)
+            //identifierPairList ::= (phone.text, IdentifierType.Phone)
         }
         identifierPairList
     }

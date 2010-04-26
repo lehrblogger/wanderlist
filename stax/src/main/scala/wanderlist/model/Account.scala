@@ -26,7 +26,9 @@ class Account extends LongKeyedMapper[Account] with IdPK {
         contactSet.toList
     }
 }
-object Account extends Account with LongKeyedMetaMapper[Account]
+object Account extends Account with LongKeyedMetaMapper[Account] {
+    override def dbTableName = "accounts"
+}
 
 object Service extends Enumeration {
     val Google     = Value(1, "google")

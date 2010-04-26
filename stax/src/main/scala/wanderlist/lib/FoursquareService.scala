@@ -34,7 +34,7 @@ object FoursquareService extends OauthProvider with ContactSource {
     def identifierPairListFromElem(elem: scala.xml.Node) = { 
         List(((elem \ "id"       ).text                                 , IdentifierType.FoursquareId ),
              ((elem \ "firstname").text + " " + (elem \ "lastname").text, IdentifierType.FullName     ),
-             ((elem \ "phone"    ).text                                 , IdentifierType.Phone        ),
+             //((elem \ "phone"    ).text                                 , IdentifierType.Phone        ),
              ((elem \ "email"    ).text                                 , IdentifierType.Email        ),
              ((elem \ "twitter"  ).text                                 , IdentifierType.TwitterHandle),
              ((elem \ "facebook" ).text                                 , IdentifierType.FacebookId   ))

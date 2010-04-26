@@ -12,6 +12,7 @@ class ContactGroup extends LongKeyedMapper[ContactGroup] with IdPK {
     object group extends MappedLongForeignKey(this, Group)
 }
 object ContactGroup extends ContactGroup with LongKeyedMetaMapper[ContactGroup] {
+    override def dbTableName = "contactgroups"
     def join (c: Contact, g: Group) = 
         //TODO validate that Contact and Group have same owner
         this.create.contact(c).group(g).save

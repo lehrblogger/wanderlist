@@ -8,4 +8,6 @@ class IdentifierAccount extends LongKeyedMapper[IdentifierAccount] with IdPK {
     object identifier extends MappedLongForeignKey(this, Identifier)
     object account extends MappedLongForeignKey(this, Account)
 }
-object IdentifierAccount extends IdentifierAccount with LongKeyedMetaMapper[IdentifierAccount]
+object IdentifierAccount extends IdentifierAccount with LongKeyedMetaMapper[IdentifierAccount] {
+    override def dbTableName = "identifieraccounts"
+}

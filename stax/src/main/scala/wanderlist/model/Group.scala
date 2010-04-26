@@ -16,4 +16,6 @@ class Group extends LongKeyedMapper[Group] with IdPK {
     
     def contacts = ContactGroup.findAll(By(ContactGroup.group, this.id)).map(_.contact.obj.open_!)
 }
-object Group extends Group with LongKeyedMetaMapper[Group]
+object Group extends Group with LongKeyedMetaMapper[Group] {
+    override def dbTableName = "groups"
+}

@@ -41,15 +41,15 @@ class ContactList {
 		}, Text(getDisplayableName(contact)))
     
     def list(xhtml: NodeSeq) = { 
-        Contact.findAll(By(Contact.owner, User.currentUser.open_!)).flatMap(contact => {
-            if (contact != User.currentUser.open_!.selfContact) {
-                val linkId = Helpers.nextFuncName
-                val infoId = Helpers.nextFuncName
-                bind("contact", xhtml, 
-                    "name" -> <span id={linkId}>{getNameOpenLink(contact, linkId, infoId)}</span>,
-                    "info" -> <div id={infoId}></div>
-                )
-            }
+        Contact.findAll(By(Contact.owner, User.currentUser.open_!)).filter{
+            contact => (contact != User.currentUser.open_!.selfContact.obj.open_!)
+        }.flatMap(contact => {
+            val linkId = Helpers.nextFuncName
+            val infoId = Helpers.nextFuncName
+            bind("contact", xhtml, 
+                "name" -> <span id={linkId}>{getNameOpenLink(contact, linkId, infoId)}</span>,
+                "info" -> <div id={infoId}></div>
+            )
         })
     }
     
