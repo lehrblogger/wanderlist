@@ -27,6 +27,9 @@ trait ContactSource { // with Actor?
         contactCounterName = name
         (new ContactFetcher(account)) ! FetchStart
     }
+    def updateSpanText(newText: String) = {
+        CounterMaster ! CounterUpdate(contactCounterName, newText)
+    }
     
     
     def identifierPairListFromElem(elem: scala.xml.Node): List[(String, IdentifierType.Value)]
@@ -59,9 +62,6 @@ trait ContactSource { // with Actor?
     }
     
     
-    def updateSpanText(newText: String) = {
-        CounterMaster ! CounterUpdate(contactCounterName, newText)
-    }
     
     def getGroups(account: Account)
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem)
