@@ -20,11 +20,10 @@ import wanderlist.model._
 import wanderlist.lib._
 
 class ContactCounter extends CometActor { //with CometListener { 
-    override def defaultPrefix = Full("fetchStatus") //TODO make the below line less hacky - there has to be a better way to communicate the account being used
+    override def defaultPrefix = Full("fetchStatus") 
     var currentCount: Int = 0
     
     def render = {
-        println("rendering " + name.open_! + " with currentCount=" + currentCount)
         bind("status" -> statusSpan)
     }
     def statusSpan = (<span id={name.open_!}>{currentCount} contacts fetched</span>)
@@ -42,9 +41,10 @@ class ContactCounter extends CometActor { //with CometListener {
     //def registerWith = CounterMaster
     
     override def localSetup = {
+        //TODO make the below line less hacky - there has to be a better way to communicate the account being used
         Account.findAll(By(Account.id, name.open_!.replace("account_comet_", "").toLong)) match {
             case List(a) => currentCount = a.contacts.length
-            case _       => currentCount = -1
+            case _       => currentCount = -1 
         }
         CounterMaster ! SubscribeCounter(name.open_!, this)
         super.localSetup()

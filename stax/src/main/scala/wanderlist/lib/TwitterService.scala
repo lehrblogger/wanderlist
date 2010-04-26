@@ -21,6 +21,8 @@ object TwitterService extends OauthProvider with ContactSource  {
     val contacts = api / "statuses"
     val groups = api / ""
     val user = api / "statuses" / "user_timeline.xml"
+    
+    var cursor: String = "0"
 
     def identifierPairListFromElem(elem: scala.xml.Node) = { 
         List(((elem \ "id"         ).text, IdentifierType.TwitterId    ),
@@ -44,20 +46,27 @@ object TwitterService extends OauthProvider with ContactSource  {
             count += 1
             updateSpan(count)
         }
+        cursor = (feed \\ "next_cursor").text
     }
     def getContacts(account: Account) = {    //TODO implement paging for Twitter
         val following = Group.findAll(By(Group.groupId    , "following"  ),
                                       By(Group.owner      , account.owner),
                                       By(Group.account    , account      ),
                                       By(Group.userCreated, false        )).head
-        h(contacts / "friends.xml"   <@ (consumer, account.token) <> parseAndStoreContacts(account, List(following)))
+        cursor = "-1"
+        while (cursor != "0") {
+            h(contacts / "friends.xml" <<? Map("cursor" -> cursor) <@ (consumer, account.token) <> parseAndStoreContacts(account, List(following)))
+        }
         updateSpan("Fetched the people you're following! " + account.contacts.length + " contacts fetched.")
         
         val followers = Group.findAll(By(Group.groupId    , "followers"  ),
                                       By(Group.owner      , account.owner),
                                       By(Group.account    , account      ),
                                       By(Group.userCreated, false        )).head
-        h(contacts / "followers.xml" <@ (consumer, account.token) <> parseAndStoreContacts(account, List(followers)))
+        cursor = "-1"
+        while (cursor != "0") {
+            h(contacts / "followers.xml" <<? Map("cursor" -> cursor) <@ (consumer, account.token) <> parseAndStoreContacts(account, List(followers)))
+        }
         updateSpan("Fetched your followers too! " + account.contacts.length + " contacts fetched.")
     }
     

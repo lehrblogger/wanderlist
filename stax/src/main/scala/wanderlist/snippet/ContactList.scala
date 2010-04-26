@@ -28,7 +28,6 @@ class ContactList {
     }
     
     def getContactInfo(contact: Contact) = {
-        println(contact.id)
         <lift:embed what="/_contact_info" contact_id={contact.id.toString}/>
     }
     
