@@ -57,12 +57,12 @@ object FoursquareService extends OauthProvider with ContactSource {
                                       By(Group.userCreated, false        )).head
             ContactGroup.join(newContact, group)
             count += 1
-            updateSpanText(count + " contacts fetched...")
+            updateSpan(count)
         }
     } 
     def getContacts(account: Account) = {
         h(contacts <@ (consumer, account.token) <> parseAndStoreContacts(account, List()))
-        updateSpanText("All done! " + account.contacts.length + " contacts fetched.")
+        updateSpan("All done! " + account.contacts.length + " contacts fetched.")
     }
     
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {}

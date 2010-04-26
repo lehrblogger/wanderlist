@@ -27,8 +27,8 @@ trait ContactSource { // with Actor?
         contactCounterName = name
         (new ContactFetcher(account)) ! FetchStart
     }
-    def updateSpanText(newText: String) = {
-        CounterMaster ! CounterUpdate(contactCounterName, newText)
+    def updateSpan(newAny: Any) = {
+        CounterMaster ! CounterUpdate(contactCounterName, newAny)
     }
     
     

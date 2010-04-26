@@ -42,7 +42,7 @@ object TwitterService extends OauthProvider with ContactSource  {
                 ContactGroup.join(newContact, group)
             }
             count += 1
-            updateSpanText(count + " contacts fetched...")
+            updateSpan(count)
         }
     }
     def getContacts(account: Account) = {    //TODO implement paging for Twitter
@@ -50,17 +50,15 @@ object TwitterService extends OauthProvider with ContactSource  {
                                       By(Group.owner      , account.owner),
                                       By(Group.account    , account      ),
                                       By(Group.userCreated, false        )).head
-        println(following)
         h(contacts / "friends.xml"   <@ (consumer, account.token) <> parseAndStoreContacts(account, List(following)))
-        updateSpanText("Got the people you're following! " + account.contacts.length + " contacts fetched.")
+        updateSpan("Fetched the people you're following! " + account.contacts.length + " contacts fetched.")
         
         val followers = Group.findAll(By(Group.groupId    , "followers"  ),
                                       By(Group.owner      , account.owner),
                                       By(Group.account    , account      ),
                                       By(Group.userCreated, false        )).head
-        println(followers)
         h(contacts / "followers.xml" <@ (consumer, account.token) <> parseAndStoreContacts(account, List(followers)))
-        updateSpanText("Got your followers too! " + account.contacts.length + " contacts fetched.")
+        updateSpan("Fetched your followers too! " + account.contacts.length + " contacts fetched.")
     }
     
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {}

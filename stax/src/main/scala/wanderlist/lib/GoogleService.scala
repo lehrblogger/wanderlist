@@ -56,12 +56,12 @@ object GoogleService extends OauthProvider with ContactSource  {
                 ContactGroup.join(newContact, group)
             }
             count += 1
-            updateSpanText(count + " contacts fetched...")
+            updateSpan(count)
         }
     }
     def getContacts(account: Account) = {
         h(contacts / "default" / "full" <<? Map("max-results" -> 20000) <@ (consumer, account.token) <> parseAndStoreContacts(account, List()))
-        updateSpanText("All done! " + account.contacts.length + " contacts fetched.")
+        updateSpan("All done! " + account.contacts.length + " contacts fetched.")
     }
     
     def parseAndStoreGroups(account: Account)(feed: scala.xml.Elem) = {
