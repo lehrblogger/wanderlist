@@ -52,7 +52,7 @@ class AccountList {
                                         case Service.Google     => GoogleService
                                         case Service.Twitter    => TwitterService
                                     }).getAccountData(account, contactCounterName) 
-                                    SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts!"))
+                                    SetHtml(buttonSpanId, Text("")) & SetHtml(contactCounterName, Text("Fetching your contacts..."))
                 				})
         				    }</span> 
         				} else {
@@ -60,16 +60,19 @@ class AccountList {
         				}
     				},
 			    "status" -> {
-			            // println("re-binding the status with name = " + contactCounterName + " and count = " + account.contacts.length)
-                        if (count == 0) {
-                            <lift:comet type="ContactCounter" name={contactCounterName}>
-        			                <span id={contactCounterName}>click to get your contacts for this account</span>
-                            </lift:comet>
-        				} else { //TODO fix this since it's still a little buggy, but good enough
-                            <lift:comet type="ContactCounter" name={contactCounterName}>
-        			                <span id={contactCounterName}>{count} contacts fetched.</span>
-                            </lift:comet>
-        				}
+			            println("re-binding the status with name = " + contactCounterName + " and count = " + count + " and account.contacts.length = " + account.contacts.length)
+                        <lift:comet type="ContactCounter" name={contactCounterName}>
+    			                <span id={contactCounterName}>{count} contacts fetched.</span>
+                        </lift:comet>
+                        // if (count == 0) {
+                        //                             <lift:comet type="ContactCounter" name={contactCounterName}>
+                        //                                  <span id={contactCounterName}>click to get your contacts for this account</span>
+                        //                             </lift:comet>
+                        //                      } else { //TODO fix this since it's still a little buggy, but good enough
+                        //                             <lift:comet type="ContactCounter" name={contactCounterName}>
+                        //                                  <span id={contactCounterName}>{count} contacts fetched.</span>
+                        //                             </lift:comet>
+                        //                      }
         			}
             )
         })
