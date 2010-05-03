@@ -1,6 +1,6 @@
 import sbt._
 
-class WanderlistProject(info: ProjectInfo) extends DefaultWebProject(info) with stax.StaxPlugin {
+class WanderlistProject(info: ProjectInfo) extends DefaultWebProject(info) with stax.StaxPlugin with AutoCompilerPlugins    {
     override def staxApplicationId = "wanderlist"
     override def jettyPort  = 80
     
@@ -18,4 +18,6 @@ class WanderlistProject(info: ProjectInfo) extends DefaultWebProject(info) with 
     
     // Repositories
     val nexusRepo = "nexus" at "https://nexus.griddynamics.net/nexus/content/groups/public"
+    
+    val sxr = compilerPlugin("org.scala-tools.sxr" %% "sxr" % "0.2.1")
 }
